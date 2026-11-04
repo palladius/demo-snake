@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Puffin Snake</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a14;
+      --panel: #13172b;
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --snake-color: #FACC15;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #1b2244 0%, #080a14 75%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0.75rem;
+    }
+
+    /* MINIMALIST TOP BAR WITH PUFFINLOGIN IN TOP-RIGHT */
+    .hud-header {
+      max-width: 720px;
+      margin: 0 auto 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(19, 23, 43, 0.94);
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.85rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .hud-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .game-title {
+      font-size: 1rem;
+      font-weight: 900;
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .stat-pill {
+      background: rgba(250, 204, 21, 0.12);
+      border: 1.5px solid var(--snake-color, #FACC15);
+      color: #fef08a;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .hud-right {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    /* MAIN ARENA LAYOUT */
+    .arena-layout {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stage-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 1.15rem;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: 20 / 13;
+      border-radius: 0.9rem;
+      overflow: hidden;
+      border: 2.5px solid var(--snake-color, #FACC15);
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.6);
+      background: #070913;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .controls-row {
+      margin-top: 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+
+    .btn {
+      background: #23294a;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 0.42rem 0.78rem;
+      border-radius: 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn.primary {
+      background: var(--snake-color, #FACC15);
+      color: #0b0d19;
+      border: none;
+    }
+
+    .dpad {
+      margin-top: 0.6rem;
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(2, 42px);
+      gap: 0.32rem;
+      justify-content: center;
+    }
+
+    .dpad-btn {
+      background: #1e2444;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.65rem;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .dpad-btn:active {
+      background: var(--snake-color, #FACC15);
+      color: #090b14;
+    }
+
+    /* HALL OF FAME: Hidden during gameplay, revealed ONLY on Game Over! */
+    .hof-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 1.15rem;
+      padding: 0.95rem 1rem;
+    }
+
+    .hof-section[hidden] {
+      display: none !important;
+    }
+
+    .hof-title {
+      margin: 0 0 0.65rem;
+      font-size: 0.95rem;
+      font-weight: 900;
+      text-align: center;
+      color: #f8fafc;
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 0.45rem; }
+      .hud-header { padding: 0.45rem 0.65rem; }
+      .game-title { font-size: 0.92rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hud-header">
+    <div class="hud-left">
+      <h1 class="game-title">🐍 Puffin Snake</h1>
+      <span class="stat-pill" id="hud-score">0</span>
+    </div>
+    <div class="hud-right">
+      <puffin-login id="puffin-widget" app-id="puffin-snake" require-login="true"></puffin-login>
+    </div>
+  </header>
+
+  <main class="arena-layout">
+    <section class="stage-card">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <canvas id="snake-canvas" width="600" height="390"></canvas>
+      </div>
+
+      <div class="controls-row">
+        <button type="button" class="btn primary" id="btn-start">Play / Restart</button>
+        <button type="button" class="btn" id="btn-eat-apple">+300 pt</button>
+        <button type="button" class="btn" id="btn-die-now">Game Over</button>
+      </div>
+
+      <div class="dpad" id="dpad-controls" aria-label="Snake directional controls">
+        <span></span>
+        <button type="button" class="dpad-btn" data-dir="UP" aria-label="Up">⬆️</button>
+        <span></span>
+        <button type="button" class="dpad-btn" data-dir="LEFT" aria-label="Left">⬅️</button>
+        <button type="button" class="dpad-btn" data-dir="DOWN" aria-label="Down">⬇️</button>
+        <button type="button" class="dpad-btn" data-dir="RIGHT" aria-label="Right">➡️</button>
+      </div>
+    </section>
+
+    <!-- Shown ONLY when the game ends (Game Over)! -->
+    <section class="hof-section" id="hof-section" hidden>
+      <h2 class="hof-title">🏆 Hall of Fame</h2>
+      <puffin-leaderboard id="snake-lb" filter-game="puffin-snake"></puffin-leaderboard>
+    </section>
+  </main>
+
+  <script type="module">
+    import { PuffinLogin } from './src/puffin-login.js';
+
+    const COLS = 20;
+    const ROWS = 13;
+    const CELL = 30;
+
+    const canvas = document.getElementById('snake-canvas');
+    const ctx = canvas.getContext('2d');
+    const widget = document.getElementById('puffin-widget');
+    const hudScore = document.getElementById('hud-score');
+    const hofSection = document.getElementById('hof-section');
+    const btnStart = document.getElementById('btn-start');
+    const btnEat = document.getElementById('btn-eat-apple');
+    const btnDie = document.getElementById('btn-die-now');
+
+    let snake = [
+      { x: 7, y: 6 },
+      { x: 6, y: 6 },
+      { x: 5, y: 6 },
+      { x: 4, y: 6 },
+    ];
+    let dir = { x: 1, y: 0 };
+    // FIFO input buffer queue: caches rapid multi-key turns (e.g. UP then LEFT within 1 tick!)
+    let dirQueue = [];
+    let apple = { x: 14, y: 6 };
+    let score = 0;
+    let applesEaten = 0;
+    let matchStartedAt = new Date().toISOString();
+    let isGameOver = false;
+    let tickTimer = null;
+
+    function syncPlayerTheme() {
+      const user = PuffinLogin.getCurrentUser();
+      const color = user ? user.colorHex : '#64748B';
+      document.documentElement.style.setProperty('--snake-color', color);
+      const locked = !user;
+      btnStart.disabled = locked;
+      btnEat.disabled = locked;
+      btnDie.disabled = locked;
+      drawBoard();
+    }
+
+    function spawnApple() {
+      for (let tries = 0; tries < 50; tries++) {
+        const candidate = {
+          x: 1 + Math.floor(Math.random() * (COLS - 2)),
+          y: 1 + Math.floor(Math.random() * (ROWS - 2)),
+        };
+        if (!snake.some((s) => s.x === candidate.x && s.y === candidate.y)) {
+          apple = candidate;
+          return;
+        }
+      }
+      apple = { x: 10, y: 5 };
+    }
+
+    function startNewMatch() {
+      if (tickTimer) {
+        clearInterval(tickTimer);
+        tickTimer = null;
+      }
+      const user = PuffinLogin.getCurrentUser();
+      if (!user) {
+        hofSection.hidden = true;
+        syncPlayerTheme();
+        widget.openModal();
+        return;
+      }
+      snake = [
+        { x: 7, y: 6 },
+        { x: 6, y: 6 },
+        { x: 5, y: 6 },
+        { x: 4, y: 6 },
+      ];
+      dir = { x: 1, y: 0 };
+      dirQueue = [];
+      score = 0;
+      applesEaten = 0;
+      isGameOver = false;
+      // Hide Hall of Fame while playing!
+      hofSection.hidden = true;
+      document.getElementById('dpad-controls').style.display = 'grid';
+      matchStartedAt = PuffinLogin.startGameSession('puffin-snake');
+      spawnApple();
+      updateHud();
+      drawBoard();
+      tickTimer = setInterval(stepSnake, 155);
+    }
+
+    function updateHud() {
+      hudScore.textContent = `${score}`;
+    }
+
+    function stepSnake() {
+      if (isGameOver || !PuffinLogin.getCurrentUser()) return;
+      if (dirQueue.length > 0) {
+        dir = dirQueue.shift();
+      }
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+        triggerGameOver('wall_crash');
+        return;
+      }
+
+      if (snake.some((seg) => seg.x === head.x && seg.y === head.y)) {
+        triggerGameOver('self_bite');
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === apple.x && head.y === apple.y) {
+        score += 100;
+        applesEaten += 1;
+        spawnApple();
+      } else {
+        snake.pop();
+      }
+
+      updateHud();
+      drawBoard();
+    }
+
+    async function triggerGameOver(cause = 'wall_crash') {
+      if (isGameOver || !PuffinLogin.getCurrentUser()) return;
+      isGameOver = true;
+      dirQueue = [];
+      if (tickTimer) {
+        clearInterval(tickTimer);
+        tickTimer = null;
+      }
+
+      const endedAt = new Date().toISOString();
+      const user = PuffinLogin.getCurrentUser();
+      await PuffinLogin.submitScore({
+        game_id: 'puffin-snake',
+        score,
+        started_at: matchStartedAt,
+        ended_at: endedAt,
+        summary_text: `${user.shortName}: ${score}`,
+        extra: {
+          apples_eaten: applesEaten,
+          snake_length: snake.length,
+          difficulty: 'normal',
+          schema_hash: 'snake_grid_20x13',
+          death_cause: cause,
+        },
+      });
+
+      document.getElementById('dpad-controls').style.display = 'none';
+      // Reveal Hall of Fame ONLY at the end of the match (Game Over)!
+      hofSection.hidden = false;
+      drawBoard();
+    }
+
+    function drawBoard() {
+      const user = PuffinLogin.getCurrentUser();
+      const color = user ? user.colorHex : '#64748B';
+
+      ctx.fillStyle = '#070913';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.045)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= COLS; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * CELL, 0);
+        ctx.lineTo(x * CELL, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= ROWS; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * CELL);
+        ctx.lineTo(canvas.width, y * CELL);
+        ctx.stroke();
+      }
+
+      if (!user) {
+        ctx.fillStyle = 'rgba(8, 10, 20, 0.78)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f8fafc';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = '900 24px Inter, system-ui, sans-serif';
+        ctx.fillText('🔒 Log in to play', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🍎', apple.x * CELL + CELL / 2, apple.y * CELL + CELL / 2 + 1);
+
+      snake.forEach((seg, idx) => {
+        const px = seg.x * CELL + 2;
+        const py = seg.y * CELL + 2;
+        const sz = CELL - 4;
+        ctx.fillStyle = idx === 0 ? color : `${color}cc`;
+        ctx.beginPath();
+        ctx.roundRect(px, py, sz, sz, idx === 0 ? 9 : 6);
+        ctx.fill();
+      });
+
+      if (isGameOver) {
+        ctx.fillStyle = 'rgba(8, 10, 20, 0.68)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fef08a';
+        ctx.font = '900 28px Inter, system-ui, sans-serif';
+        ctx.fillText(`GAME OVER — ${score}`, canvas.width / 2, canvas.height / 2 - 10);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '700 14px Inter, system-ui, sans-serif';
+        ctx.fillText(`${user.shortName} • Press Space or Play to restart`, canvas.width / 2, canvas.height / 2 + 20);
+      }
+    }
+
+    /**
+     * Caches directional inputs in `dirQueue` (up to 3 turns ahead) against the last queued direction.
+     * Prevents lost inputs when rapidly pressing e.g. UP then LEFT within a single tick!
+     */
+    function setDirection(dirName) {
+      if (!PuffinLogin.getCurrentUser() || isGameOver) return;
+      const vecMap = {
+        UP: { x: 0, y: -1 },
+        DOWN: { x: 0, y: 1 },
+        LEFT: { x: -1, y: 0 },
+        RIGHT: { x: 1, y: 0 },
+      };
+      const nextVec = vecMap[dirName];
+      if (!nextVec) return;
+
+      const refDir = dirQueue.length > 0 ? dirQueue[dirQueue.length - 1] : dir;
+      if (nextVec.x !== refDir.x && nextVec.y !== refDir.y && dirQueue.length < 3) {
+        dirQueue.push(nextVec);
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!PuffinLogin.getCurrentUser()) return;
+      if (['ArrowUp', 'KeyW'].includes(e.code)) { e.preventDefault(); setDirection('UP'); }
+      if (['ArrowDown', 'KeyS'].includes(e.code)) { e.preventDefault(); setDirection('DOWN'); }
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) { e.preventDefault(); setDirection('LEFT'); }
+      if (['ArrowRight', 'KeyD'].includes(e.code)) { e.preventDefault(); setDirection('RIGHT'); }
+      if (e.code === 'Space' && isGameOver) { e.preventDefault(); startNewMatch(); }
+    });
+
+    document.querySelectorAll('.dpad-btn').forEach((btn) => {
+      btn.addEventListener('click', () => setDirection(btn.getAttribute('data-dir')));
+    });
+
+    btnStart.addEventListener('click', startNewMatch);
+    btnEat.addEventListener('click', () => {
+      if (isGameOver || !PuffinLogin.getCurrentUser()) return;
+      score += 300;
+      applesEaten += 3;
+      const tail = snake[snake.length - 1];
+      snake.push({ ...tail }, { ...tail });
+      updateHud();
+      drawBoard();
+    });
+    btnDie.addEventListener('click', () => {
+      triggerGameOver('wall_crash');
+    });
+
+    PuffinLogin.on('USER_CHANGED', (newUser) => {
+      syncPlayerTheme();
+      if (newUser) {
+        startNewMatch();
+      } else {
+        if (tickTimer) {
+          clearInterval(tickTimer);
+          tickTimer = null;
+        }
+        hofSection.hidden = true;
+        drawBoard();
+      }
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('lang')) {
+      widget.setLang(params.get('lang'));
+    }
+    if (params.get('logout') === '1') {
+      widget.logout(false);
+    }
+    if (params.get('user')) {
+      widget.saveActiveSession(params.get('user'), false);
+    }
+
+    syncPlayerTheme();
+    if (PuffinLogin.getCurrentUser()) {
+      startNewMatch();
+    }
+
+    if (params.get('eat') && PuffinLogin.getCurrentUser()) {
+      const count = Number(params.get('eat')) || 5;
+      score = count * 100;
+      applesEaten = count;
+      for (let i = 0; i < Math.min(count, 8); i++) {
+        snake.push({ x: Math.max(1, 4 - i), y: 6 });
+      }
+      matchStartedAt = new Date(Date.now() - 42_000).toISOString();
+      updateHud();
+      drawBoard();
+    }
+
+    if (params.get('gameover') === '1' && PuffinLogin.getCurrentUser()) {
+      if (tickTimer) clearInterval(tickTimer);
+      triggerGameOver('wall_crash');
+    }
+
+    if (params.get('wrong')) {
+      if (tickTimer) clearInterval(tickTimer);
+      widget.openModal(params.get('wrong'));
+      if (widget.selectedCandidate) {
+        widget.verifySecret(widget.selectedCandidate, 'wrong_secret_9999');
+      }
+    } else if (params.get('open')) {
+      if (tickTimer) clearInterval(tickTimer);
+      widget.openModal(params.get('open'));
+      const demoPin = params.get('pin') || '';
+      if (demoPin && widget.selectedCandidate) {
+        widget.pinBuffer = demoPin;
+        widget.renderKidsCutiePinPad(
+          widget.selectedCandidate,
+          widget.getLockoutStatus(widget.selectedCandidate.id)
+        );
+      }
+    }
+  </script>
+</body>
+</html>
