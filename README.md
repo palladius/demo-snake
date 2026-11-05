@@ -1,6 +1,17 @@
 # 🐍🐧 Puffin Snake (`palladius/demo-snake`)
 
-Playable **Puffin Snake** hosted on **GitHub Pages** (`https://palladius.github.io/demo-snake/`) powered by **PuffinLogin** (`<puffin-login>` & `<puffin-leaderboard>`) and backed by **Google Cloud Firestore** (`ror-goldie` / database `puffin-login`).
+> 🎮 **GIOCA SUBITO LIVE SU GITHUB PAGES:**  
+> 👉 **[https://palladius.github.io/demo-snake/](https://palladius.github.io/demo-snake/)**
+
+Playable **Puffin Snake** hosted on **GitHub Pages** ([https://palladius.github.io/demo-snake/](https://palladius.github.io/demo-snake/)) powered by **PuffinLogin** (`<puffin-login>` & `<puffin-leaderboard>`) and backed by **Google Cloud Firestore** (`ror-goldie` / database `puffin-login`).
+
+## 🔗 Live Links & Vetrina
+
+- 🐍 **Play Puffin Snake (GitHub Pages)**: **[https://palladius.github.io/demo-snake/](https://palladius.github.io/demo-snake/)**
+- 🏆 **Hall of Fame Top 10 (GitHub Pages)**: **[https://palladius.github.io/demo-snake/hall-of-fame.html](https://palladius.github.io/demo-snake/hall-of-fame.html)**
+- 🖼️ **PuffinLogin Vetrina `/` (Cloud Run)**: **[https://puffin-login-932724269481.europe-west1.run.app/](https://puffin-login-932724269481.europe-west1.run.app/)**
+- ☁️ **Puffin Snake (Cloud Run)**: **[https://puffin-login-932724269481.europe-west1.run.app/snake.html](https://puffin-login-932724269481.europe-west1.run.app/snake.html)**
+- 🔥 **Cloud Firestore (`ror-goldie` / `puffin-login`)**: **[Pantheon Console](https://console.cloud.google.com/firestore/databases/puffin-login/data/panel/scores?project=ror-goldie)** • **[Firebase Console](https://console.firebase.google.com/project/ror-goldie/firestore/databases/puffin-login/data/~2Fscores)**
 
 ## 🔐 How Login & Passwords Work on Public GitHub Pages (`*.github.io`)
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - 2026-11-05
+
+### Changed
+- Added prominent clickable live link **[https://palladius.github.io/demo-snake/](https://palladius.github.io/demo-snake/)**, Hall of Fame link, and Cloud Run Vetrina `/` link to [`README.md`](README.md) and GitHub repo `homepage`.
+
 ## [1.0.0] - 2026-11-04
 
 ### Added
