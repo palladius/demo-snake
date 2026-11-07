@@ -24,44 +24,45 @@
       padding: 0.75rem;
     }
 
-    /* MINIMALIST TOP BAR WITH PUFFINLOGIN IN TOP-RIGHT */
+    /* MINIMALIST TOP BAR WITH BIG, CUTE PUFFINLOGIN IN TOP-RIGHT */
     .hud-header {
       max-width: 720px;
       margin: 0 auto 0.85rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.75rem;
       background: rgba(19, 23, 43, 0.94);
       border: 1px solid var(--border);
-      padding: 0.55rem 0.85rem;
-      border-radius: 1rem;
+      padding: 0.6rem 0.95rem;
+      border-radius: 1.15rem;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     }
 
     .hud-left {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.75rem;
       min-width: 0;
       flex-wrap: wrap;
     }
 
     .game-title {
-      font-size: 1rem;
+      font-size: 1.12rem;
       font-weight: 900;
       margin: 0;
       white-space: nowrap;
+      letter-spacing: -0.02em;
     }
 
     .stat-pill {
-      background: rgba(250, 204, 21, 0.12);
-      border: 1.5px solid var(--snake-color, #FACC15);
+      background: rgba(250, 204, 21, 0.14);
+      border: 2px solid var(--snake-color, #FACC15);
       color: #fef08a;
-      padding: 0.2rem 0.6rem;
+      padding: 0.26rem 0.75rem;
       border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 800;
+      font-size: 0.92rem;
+      font-weight: 900;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
@@ -69,27 +70,28 @@
     .hud-right {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.5rem;
       flex-shrink: 0;
     }
 
-    /* MAIN ARENA LAYOUT */
+    /* MAIN ARENA LAYOUT (PURE MINIMALIST SNAKE — NO CLUTTER BELOW!) */
     .arena-layout {
       max-width: 720px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .stage-card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 1.15rem;
-      padding: 0.85rem;
+      border-radius: 1.25rem;
+      padding: 0.95rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
     }
 
     /* DIFFICULTY SELECTOR BAR (Default = Facile / Easy) */
@@ -107,12 +109,12 @@
       background: transparent;
       color: var(--muted);
       border: none;
-      padding: 0.34rem 0.78rem;
+      padding: 0.34rem 0.82rem;
       border-radius: 999px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 800;
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
     .diff-btn:hover {
@@ -144,22 +146,29 @@
     }
 
     .controls-row {
-      margin-top: 0.7rem;
+      margin-top: 0.75rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.45rem;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .btn {
       background: #23294a;
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 0.42rem 0.78rem;
-      border-radius: 0.7rem;
-      font-size: 0.78rem;
+      padding: 0.46rem 0.9rem;
+      border-radius: 0.75rem;
+      font-size: 0.82rem;
       font-weight: 800;
       cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #2e3660;
+      transform: translateY(-1px);
     }
 
     .btn:disabled {
@@ -171,6 +180,10 @@
       background: var(--snake-color, #FACC15);
       color: #0b0d19;
       border: none;
+    }
+
+    .btn.primary:hover:not(:disabled) {
+      filter: brightness(1.06);
     }
 
     .dpad {
@@ -198,30 +211,134 @@
       color: #090b14;
     }
 
-    /* HALL OF FAME: Hidden during gameplay, revealed ONLY on Game Over! */
-    .hof-section {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 1.15rem;
-      padding: 0.95rem 1rem;
+    /* BOTTOM RECORD TIP CHIP ("Record: [Icon] Riccardo, 1800") */
+    .record-tip-btn {
+      margin-top: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.48rem;
+      padding: 0.3rem 0.85rem 0.3rem 0.38rem;
+      border-radius: 999px;
+      background: rgba(11, 14, 29, 0.88);
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
     }
 
-    .hof-section[hidden] {
+    .record-tip-btn:hover {
+      transform: scale(1.04);
+      border-color: var(--record-color, #FACC15);
+      background: rgba(24, 30, 58, 0.95);
+    }
+
+    .record-avatar-wrap {
+      width: 1.65rem;
+      height: 1.65rem;
+      border-radius: 28%;
+      overflow: hidden;
+      border: 1.5px solid var(--record-color, #FACC15);
+      background: #080a14;
+      flex-shrink: 0;
+    }
+
+    .record-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 23%;
+      transform: scale(1.48) translateY(6%);
+    }
+
+    .record-label {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .record-value {
+      color: #fef08a;
+      font-weight: 900;
+    }
+
+    /* HALL OF FAME MODAL DIALOG (Opens ONLY on Game Over or button click!) */
+    dialog.hof-dialog {
+      border: none;
+      padding: 0;
+      background: transparent;
+      color: var(--text);
+      max-width: min(94vw, 560px);
+      width: 100%;
+      margin: auto;
+    }
+
+    dialog.hof-dialog::backdrop {
+      background: rgba(5, 7, 15, 0.78);
+      backdrop-filter: blur(6px);
+    }
+
+    .hof-modal-card {
+      background: #14182e;
+      border: 2px solid var(--snake-color, #FACC15);
+      border-radius: 1.25rem;
+      padding: 1.05rem 1.15rem;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    }
+
+    .hof-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hof-modal-title {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 900;
+    }
+
+    .hof-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .hof-gameover-banner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(250, 204, 21, 0.1);
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      border-radius: 0.85rem;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .hof-gameover-banner[hidden] {
       display: none !important;
     }
 
-    .hof-title {
-      margin: 0 0 0.65rem;
-      font-size: 0.95rem;
-      font-weight: 900;
-      text-align: center;
-      color: #f8fafc;
+    .hof-gameover-text {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fef08a;
     }
 
     @media (max-width: 520px) {
       body { padding: 0.45rem; }
       .hud-header { padding: 0.45rem 0.65rem; }
-      .game-title { font-size: 0.92rem; }
+      .game-title { font-size: 0.95rem; }
       .diff-btn { padding: 0.3rem 0.62rem; font-size: 0.74rem; }
     }
   </style>
@@ -230,7 +347,7 @@
   <header class="hud-header">
     <div class="hud-left">
       <h1 class="game-title">🐍 Puffin Snake</h1>
-      <span class="stat-pill" id="hud-score">0</span>
+      <span class="stat-pill" id="hud-score">0 pt</span>
     </div>
     <div class="hud-right">
       <puffin-login id="puffin-widget" app-id="puffin-snake" require-login="true"></puffin-login>
@@ -251,8 +368,7 @@
 
       <div class="controls-row">
         <button type="button" class="btn primary" id="btn-start">▶️ Play / Restart (Enter / Spazio)</button>
-        <button type="button" class="btn" id="btn-eat-apple">🍎 +300 pt</button>
-        <button type="button" class="btn" id="btn-die-now">💀 Game Over</button>
+        <button type="button" class="btn" id="btn-open-hof">🏆 Hall of Fame</button>
       </div>
 
       <div class="dpad" id="dpad-controls" aria-label="Snake directional controls">
@@ -260,20 +376,41 @@
         <button type="button" class="dpad-btn" data-dir="UP" aria-label="Up">⬆️</button>
         <span></span>
         <button type="button" class="dpad-btn" data-dir="LEFT" aria-label="Left">⬅️</button>
+        <span></span>
         <button type="button" class="dpad-btn" data-dir="DOWN" aria-label="Down">⬇️</button>
         <button type="button" class="dpad-btn" data-dir="RIGHT" aria-label="Right">➡️</button>
       </div>
-    </section>
 
-    <!-- Shown ONLY when the game ends (Game Over)! -->
-    <section class="hof-section" id="hof-section" hidden>
-      <h2 class="hof-title">🏆 Hall of Fame</h2>
-      <puffin-leaderboard id="snake-lb" filter-game="puffin-snake"></puffin-leaderboard>
+      <!-- Minimalist Bottom Record Tip ("Record: [Icon] Riccardo, 1800") -->
+      <button type="button" class="record-tip-btn" id="record-tip-btn" title="Clicca per vedere la Hall of Fame Top 10">
+        <span class="record-label">🏆 Record:</span>
+        <span class="record-avatar-wrap">
+          <img class="record-avatar-img" id="record-avatar" src="./assets/avatars/riccardo.png" alt="Record" />
+        </span>
+        <span class="record-value" id="record-text">Riccardo, 1800</span>
+      </button>
     </section>
   </main>
 
+  <!-- Hall of Fame Modal Dialog: appears ONLY when you die or click the button! -->
+  <dialog class="hof-dialog" id="hof-dialog" closedby="any">
+    <div class="hof-modal-card">
+      <div class="hof-modal-header">
+        <h2 class="hof-modal-title">🏆 Hall of Fame — Puffin Snake</h2>
+        <button type="button" class="hof-close-btn" id="btn-close-hof" aria-label="Chiudi">✕</button>
+      </div>
+
+      <div class="hof-gameover-banner" id="hof-gameover-banner" hidden>
+        <span class="hof-gameover-text" id="hof-gameover-text">💀 Game Over!</span>
+        <button type="button" class="btn primary" id="btn-modal-restart">▶️ Rigioca (Enter / Spazio)</button>
+      </div>
+
+      <puffin-leaderboard id="snake-lb" filter-game="puffin-snake"></puffin-leaderboard>
+    </div>
+  </dialog>
+
   <script type="module">
-    import { PuffinLogin } from './src/puffin-login.js';
+    import { PuffinLogin, PUFFIN_PROFILES } from './src/puffin-login.js';
 
     const COLS = 20;
     const ROWS = 13;
@@ -295,10 +432,16 @@
     const ctx = canvas.getContext('2d');
     const widget = document.getElementById('puffin-widget');
     const hudScore = document.getElementById('hud-score');
-    const hofSection = document.getElementById('hof-section');
+    const hofDialog = document.getElementById('hof-dialog');
+    const hofGameOverBanner = document.getElementById('hof-gameover-banner');
+    const hofGameOverText = document.getElementById('hof-gameover-text');
     const btnStart = document.getElementById('btn-start');
-    const btnEat = document.getElementById('btn-eat-apple');
-    const btnDie = document.getElementById('btn-die-now');
+    const btnOpenHof = document.getElementById('btn-open-hof');
+    const btnCloseHof = document.getElementById('btn-close-hof');
+    const btnModalRestart = document.getElementById('btn-modal-restart');
+    const recordTipBtn = document.getElementById('record-tip-btn');
+    const recordAvatar = document.getElementById('record-avatar');
+    const recordText = document.getElementById('record-text');
     const diffBtns = Array.from(document.querySelectorAll('.diff-btn'));
 
     let currentDifficulty = 'easy';
@@ -320,6 +463,46 @@
     let countdownStep = 0; // 0 = not counting down; 1, 2, 3 = counting; 4 = "VIA!"
     let countdownTimer = null;
 
+    function openHofModal(fromGameOver = false) {
+      hofGameOverBanner.hidden = !fromGameOver;
+      if (fromGameOver) {
+        const user = PuffinLogin.getCurrentUser();
+        const cfg = DIFFICULTY_LEVELS[currentDifficulty] || DIFFICULTY_LEVELS.easy;
+        hofGameOverText.textContent = `💀 ${user ? user.shortName : 'Player'}: ${score} pt (${cfg.label})`;
+      }
+      if (!hofDialog.open) {
+        try {
+          hofDialog.showModal();
+        } catch {
+          hofDialog.setAttribute('open', '');
+        }
+      }
+    }
+
+    function closeHofModal() {
+      if (hofDialog.open) {
+        try {
+          hofDialog.close();
+        } catch {
+          hofDialog.removeAttribute('open');
+        }
+      }
+    }
+
+    async function refreshRecordTip() {
+      try {
+        const top = await PuffinLogin.getTopScores({ gameId: 'puffin-snake', limit: 1 });
+        const best = Array.isArray(top) && top.length > 0 ? top[0] : null;
+        if (best) {
+          const prof = PUFFIN_PROFILES[best.player_id || best.userId] || PUFFIN_PROFILES.riccardo;
+          recordAvatar.src = `./assets/avatars/${prof.id || 'riccardo'}.png`;
+          recordAvatar.alt = prof.shortName;
+          recordText.textContent = `${prof.shortName}, ${best.score}`;
+          recordTipBtn.style.setProperty('--record-color', prof.colorHex || '#FACC15');
+        }
+      } catch {}
+    }
+
     function playCountdownBeep(freq = 520, durationMs = 95) {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -332,7 +515,7 @@
         gain.gain.setValueAtTime(0.08, actx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + durationMs / 1000);
         osc.connect(gain);
-        gain.connect(actx.destination);
+        gain.connect(ctx.destination);
         osc.start();
         osc.stop(actx.currentTime + durationMs / 1000);
         setTimeout(() => actx.close().catch(() => {}), durationMs + 50);
@@ -370,8 +553,6 @@
       document.documentElement.style.setProperty('--snake-color', color);
       const locked = !user;
       btnStart.disabled = locked;
-      btnEat.disabled = locked;
-      btnDie.disabled = locked;
       drawBoard();
     }
 
@@ -397,9 +578,9 @@
 
     function startNewMatch({ skipCountdown = false } = {}) {
       stopAllTimers();
+      closeHofModal();
       const user = PuffinLogin.getCurrentUser();
       if (!user) {
-        hofSection.hidden = true;
         syncPlayerTheme();
         widget.openModal();
         return;
@@ -415,8 +596,6 @@
       score = 0;
       applesEaten = 0;
       isGameOver = false;
-      // Hide Hall of Fame while playing!
-      hofSection.hidden = true;
       document.getElementById('dpad-controls').style.display = 'grid';
       spawnApple();
       updateHud();
@@ -451,7 +630,7 @@
     }
 
     function updateHud() {
-      hudScore.textContent = `${score}`;
+      hudScore.textContent = `${score} pt`;
     }
 
     function stepSnake() {
@@ -508,10 +687,10 @@
         },
       });
 
-      document.getElementById('dpad-controls').style.display = 'none';
-      // Reveal Hall of Fame ONLY at the end of the match (Game Over)!
-      hofSection.hidden = false;
+      await refreshRecordTip();
       drawBoard();
+      // Open Hall of Fame modal automatically ONLY when you die!
+      openHofModal(true);
     }
 
     function drawBoard() {
@@ -640,8 +819,8 @@
     window.addEventListener('keydown', (e) => {
       if (!PuffinLogin.getCurrentUser()) return;
       // Do not intercept keys while the PuffinLogin modal dialog is open
-      const modalOpen = Boolean(widget.shadowRoot?.querySelector('dialog[open]'));
-      if (modalOpen) return;
+      const loginModalOpen = Boolean(widget.shadowRoot?.querySelector('dialog[open]'));
+      if (loginModalOpen) return;
 
       const isRestartKey =
         e.code === 'Space' ||
@@ -655,6 +834,8 @@
         startNewMatch();
         return;
       }
+
+      if (hofDialog.open) return;
 
       if (['ArrowUp', 'KeyW'].includes(e.code)) { e.preventDefault(); setDirection('UP'); }
       if (['ArrowDown', 'KeyS'].includes(e.code)) { e.preventDefault(); setDirection('DOWN'); }
@@ -680,19 +861,29 @@
       e.currentTarget.blur();
       startNewMatch();
     });
-    btnEat.addEventListener('click', (e) => {
+
+    btnOpenHof.addEventListener('click', (e) => {
       e.currentTarget.blur();
-      if (isGameOver || !PuffinLogin.getCurrentUser()) return;
-      score += 300;
-      applesEaten += 3;
-      const tail = snake[snake.length - 1];
-      snake.push({ ...tail }, { ...tail });
-      updateHud();
-      drawBoard();
+      openHofModal(isGameOver);
     });
-    btnDie.addEventListener('click', (e) => {
+
+    recordTipBtn.addEventListener('click', (e) => {
       e.currentTarget.blur();
-      triggerGameOver('wall_crash');
+      openHofModal(isGameOver);
+    });
+
+    btnCloseHof.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      closeHofModal();
+    });
+
+    btnModalRestart.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      startNewMatch();
+    });
+
+    window.addEventListener('puffin-score-recorded', () => {
+      refreshRecordTip();
     });
 
     PuffinLogin.on('USER_CHANGED', (newUser) => {
@@ -701,7 +892,7 @@
         startNewMatch();
       } else {
         stopAllTimers();
-        hofSection.hidden = true;
+        closeHofModal();
         drawBoard();
       }
     });
@@ -726,6 +917,8 @@
       Boolean(params.get('eat'));
 
     syncPlayerTheme();
+    refreshRecordTip();
+
     if (PuffinLogin.getCurrentUser()) {
       startNewMatch({ skipCountdown: skipCountdownParam });
     }

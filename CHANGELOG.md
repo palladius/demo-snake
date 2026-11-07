@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-11-07
+
+### Changed
+- **Modal-Only Hall of Fame & Bottom `Record: [Icon] Name, Score` Chip**: Moved the Hall of Fame into a centered `<dialog id="hof-dialog">` modal that opens only on Game Over or when clicking the bottom `🏆 Record:` chip / `🏆 Hall of Fame` button.
+- **Bigger, Cuter Top-Right `<puffin-login>` Badge**: Enlarged avatar (`44px`) and player name (`1.02rem`) in the top-right login pill.
+
 ## [1.1.0] - 2026-11-07
 
 ### Added

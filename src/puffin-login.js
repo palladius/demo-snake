@@ -734,21 +734,21 @@ const COMPONENT_CSS = `
   --puffin-radius: 50%;
 }
 
-/* 1. ULTRA-MINIMALIST CORNER PILL BADGE (ONLY Icon + Name — No emoji, no subtitle!) */
+/* 1. BIGGER, CUTER, MINIMALIST CORNER PILL BADGE (ONLY Icon + Name — No emoji, no subtitle!) */
 .puffin-badge-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.42rem;
-  padding: 0.2rem 0.65rem 0.2rem 0.22rem;
+  gap: 0.62rem;
+  padding: 0.28rem 0.98rem 0.28rem 0.32rem;
   border-radius: 999px;
-  background: rgba(18, 21, 40, 0.94);
-  border: 2px solid var(--active-color, #FACC15);
-  box-shadow: 0 3px 12px var(--active-glow, rgba(250, 204, 21, 0.28));
+  background: linear-gradient(135deg, rgba(22, 27, 52, 0.96), color-mix(in srgb, var(--active-color, #FACC15) 18%, #121528));
+  border: 2.5px solid var(--active-color, #FACC15);
+  box-shadow: 0 5px 18px var(--active-glow, rgba(250, 204, 21, 0.34)), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: var(--puffin-text);
   cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 800;
-  transition: scale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  font-size: 1.02rem;
+  font-weight: 900;
+  transition: scale 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
   translate: 0px;
   rotate: 0deg;
   scale: 1;
@@ -756,30 +756,33 @@ const COMPONENT_CSS = `
 
 .puffin-badge-btn:hover,
 .puffin-badge-btn:focus-visible {
-  scale: 1.05;
+  scale: 1.06;
+  box-shadow: 0 8px 24px var(--active-glow, rgba(250, 204, 21, 0.48)), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   outline: none;
 }
 
 .badge-avatar-wrap {
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: var(--puffin-radius);
   overflow: hidden;
-  border: 1.5px solid var(--active-color, #FACC15);
+  border: 2px solid var(--active-color, #FACC15);
   background: #0b0d19;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  rotate: -2deg;
+  rotate: -3deg;
   translate: 0px;
   scale: 1;
-  transition: rotate 0.25s ease;
+  transition: rotate 0.25s ease, scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .puffin-badge-btn:hover .badge-avatar-wrap,
 .puffin-badge-btn:focus-visible .badge-avatar-wrap {
-  rotate: 0deg;
+  rotate: 2deg;
+  scale: 1.06;
 }
 
 .badge-avatar-img {
@@ -803,15 +806,16 @@ const COMPONENT_CSS = `
 }
 
 .badge-lock-icon {
-  font-size: 0.95rem;
+  font-size: 1.25rem;
   line-height: 1;
 }
 
 .badge-name {
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 1.02rem;
+  font-weight: 900;
   line-height: 1;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
 /* 2. COMPACT FAMILY SELECTOR DIALOG (max-width: 440px) */
@@ -2531,8 +2535,8 @@ export const PuffinLogin = {
     return normalized;
   },
 
-  getLeaderboard({ appId, game_id, mode, limit = TOP_TEN_LIMIT } = {}) {
-    const targetGame = game_id || appId;
+  getLeaderboard({ appId, game_id, gameId, mode, limit = TOP_TEN_LIMIT } = {}) {
+    const targetGame = game_id || gameId || appId;
     try {
       const list = ensureDummyScoresSeeded(false);
       return list
@@ -2546,6 +2550,26 @@ export const PuffinLogin = {
     } catch {
       return [];
     }
+  },
+
+  async getTopScores({ appId, game_id, gameId, mode, limit = TOP_TEN_LIMIT } = {}) {
+    const targetGame = game_id || gameId || appId;
+    const localTop = this.getLeaderboard({ game_id: targetGame, mode, limit });
+    try {
+      const cfg = resolvePuffinConfig({ appId: targetGame });
+      const q = new URLSearchParams();
+      if (targetGame) q.set('game_id', targetGame);
+      if (limit) q.set('limit', String(limit));
+      const res = await fetch(`${cfg.apiUrl}/scores?${q.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.scores) && data.scores.length > 0) {
+          const merged = [...data.scores, ...localTop].sort((a, b) => b.score - a.score);
+          return merged.slice(0, limit);
+        }
+      }
+    } catch {}
+    return localTop;
   },
 };
 
