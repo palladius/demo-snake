@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0] - 2026-11-07
+
+### Added
+- **🔥💍 Puffin Login Ring (`<puffin-ring>` & `ring.html`)**:
+  - Added modular `assets/puffin-ring.png` (clean Ring of Fire background without hardcoded game badges) and `ring.html` featuring circular orbiting medallions (`360° / N`) that rotate around the Ring of Fire and dynamically sync from `palladius/vetrina` (`supports_puffin_login: true`).
+  - Added the GeoCities WebRing footer bar inside `<puffin-leaderboard>` (`⬅️ Prev` | `🔥💍 Puffin Login Ring` | `Next ➡️`) and clickable `game_id` badges in Hall of Fame rows.
+
 ## [1.5.0] - 2026-11-07
 
 ### Changed

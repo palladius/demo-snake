@@ -2804,7 +2804,302 @@ const LEADERBOARD_CSS = `
   background: #b91c1c;
   transform: scale(1.05);
 }
+
+.hof-game-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  background: rgba(250, 204, 21, 0.14);
+  color: #fde047;
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  border-radius: 0.38rem;
+  padding: 0.06rem 0.4rem;
+  font-family: monospace;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.hof-game-link:hover {
+  background: rgba(250, 204, 21, 0.28);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* GeoCities-style Puffin Login Ring Footer inside Hall of Fame */
+.hof-ring-footer {
+  margin-top: 0.45rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.95rem;
+  background: linear-gradient(135deg, rgba(45, 22, 8, 0.92) 0%, rgba(18, 14, 36, 0.96) 50%, rgba(45, 22, 8, 0.92) 100%);
+  border: 1.5px solid rgba(251, 146, 60, 0.55);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 0 18px rgba(251, 146, 60, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.48rem;
+}
+
+.hof-ring-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 520px) {
+  .hof-ring-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.hof-ring-hub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #fde047;
+  font-weight: 900;
+  font-size: 0.78rem;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.35) 0%, rgba(124, 45, 18, 0.45) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.65);
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hof-ring-hub-link:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.6);
+  color: #fff;
+}
+
+.hof-ring-step-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fdba74;
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  border-radius: 0.55rem;
+  padding: 0.24rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.hof-ring-step-btn:hover {
+  background: rgba(234, 88, 12, 0.28);
+  color: #fff;
+  border-color: #facc15;
+}
+
+.hof-ring-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.hof-ring-app-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.hof-ring-app-pill.is-live {
+  border-color: rgba(52, 211, 153, 0.55);
+  color: #a7f3d0;
+}
+
+.hof-ring-app-pill.is-upcoming {
+  border-style: dashed;
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fde68a;
+}
+
+.hof-ring-app-pill:hover {
+  transform: translateY(-1px);
+  border-color: #facc15;
+  color: #fff;
+}
 `;
+
+export const VETRINA_GAMES_JSON_URL = 'https://palladius.github.io/vetrina/data/games.json';
+export const VETRINA_RING_HASH_URL = 'https://palladius.github.io/vetrina/#puffin-ring';
+export const DEFAULT_RING_HUB_URL = 'https://puffin-login-932724269481.europe-west1.run.app/ring.html';
+
+export const PUFFIN_LOGIN_RING_DEFAULT = [
+  {
+    id: 'demo-snake',
+    puffin_game_id: 'puffin-snake',
+    title: '🐍🐧 Puffin Snake',
+    shortTitle: 'Puffin Snake',
+    emoji: '🐍',
+    play_url: 'https://palladius.github.io/demo-snake/',
+    cloud_url: 'https://puffin-login-932724269481.europe-west1.run.app/snake.html',
+    repo_url: 'https://github.com/palladius/demo-snake',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/demo-snake.png',
+    supports_puffin_login: true,
+    status: 'live',
+  },
+  {
+    id: 'kids-jigsaw-puzzle',
+    puffin_game_id: 'kids-jigsaw-puzzle',
+    title: '🧩 Kids Jigsaw Puzzle',
+    shortTitle: 'Jigsaw Puzzle',
+    emoji: '🧩',
+    play_url: 'https://palladius.github.io/kids-jigsaw-puzzle/',
+    repo_url: 'https://github.com/palladius/kids-jigsaw-puzzle',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/kids-jigsaw-puzzle.png',
+    supports_puffin_login: false,
+    status: 'upcoming',
+  },
+];
+
+export const PUFFIN_LOGIN_RING_CANDIDATES = [
+  {
+    id: 'carlesso-fotoquad',
+    puffin_game_id: 'carlesso-fotoquad',
+    title: '📸🧩 FotoQuad Solitario',
+    shortTitle: 'FotoQuad',
+    emoji: '📸',
+    play_url: 'https://palladius.github.io/carlesso-fotoquad/',
+    repo_url: 'https://github.com/palladius/carlesso-fotoquad',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/carlesso-fotoquad.jpg',
+    supports_puffin_login: false,
+    status: 'candidate',
+  },
+  {
+    id: 'family-mahjong-3d',
+    puffin_game_id: 'family-mahjong-3d',
+    title: '🀄 Family 3D Mahjong',
+    shortTitle: '3D Mahjong',
+    emoji: '🀄',
+    play_url: 'https://palladius.github.io/family-mahjong-3d/',
+    repo_url: 'https://github.com/palladius/family-mahjong-3d',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/family-mahjong-3d.jpg',
+    supports_puffin_login: false,
+    status: 'candidate',
+  },
+  {
+    id: 'tubature',
+    puffin_game_id: 'tubature',
+    title: '🚰 Tubature Plumber',
+    shortTitle: 'Tubature',
+    emoji: '🚰',
+    play_url: 'https://palladius.github.io/tubature/',
+    repo_url: 'https://github.com/palladius/tubature',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/tubature.jpg',
+    supports_puffin_login: false,
+    status: 'candidate',
+  },
+  {
+    id: 'ale-french',
+    puffin_game_id: 'ale-french',
+    title: '🇫🇷 Ale & Seby French',
+    shortTitle: 'Ale French',
+    emoji: '🇫🇷',
+    play_url: 'https://palladius.github.io/ale-french/',
+    repo_url: 'https://github.com/palladius/ale-french',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/ale-french.png',
+    supports_puffin_login: false,
+    status: 'candidate',
+  },
+];
+
+let _cachedRingApps = [...PUFFIN_LOGIN_RING_DEFAULT];
+let _vetrinaRingSynced = false;
+
+export function getPuffinRingApps({ includeCandidates = false } = {}) {
+  if (!includeCandidates) {
+    return _cachedRingApps;
+  }
+  const existingIds = new Set(_cachedRingApps.map((a) => a.id));
+  const extras = PUFFIN_LOGIN_RING_CANDIDATES.filter((c) => !existingIds.has(c.id));
+  return [..._cachedRingApps, ...extras];
+}
+
+export function resolveGameFromRing(gameId) {
+  const clean = String(gameId || '').trim().toLowerCase();
+  const all = getPuffinRingApps({ includeCandidates: true });
+  return (
+    all.find(
+      (a) =>
+        a.id.toLowerCase() === clean ||
+        (a.puffin_game_id && a.puffin_game_id.toLowerCase() === clean)
+    ) || null
+  );
+}
+
+export async function syncPuffinRingFromVetrina() {
+  if (_vetrinaRingSynced) return _cachedRingApps;
+  try {
+    const res = await fetch(VETRINA_GAMES_JSON_URL);
+    if (!res.ok) return _cachedRingApps;
+    const games = await res.json();
+    if (!Array.isArray(games)) return _cachedRingApps;
+
+    const byId = new Map(_cachedRingApps.map((a) => [a.id, { ...a }]));
+    for (const g of games) {
+      if (!g || !g.id) continue;
+      const tags = Array.isArray(g.tags) ? g.tags.map((t) => String(t).toLowerCase()) : [];
+      const isLiveRing = g.supports_puffin_login === true || tags.includes('supports_puffin_login');
+      const isExplicitUpcoming = g.supports_puffin_login === false;
+      if (!isLiveRing && !isExplicitUpcoming && !byId.has(g.id)) continue;
+
+      const prev = byId.get(g.id) || {};
+      const rawTitle = String(g.title || prev.title || g.id);
+      const firstEmojiMatch = rawTitle.match(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u);
+      const emoji = prev.emoji || (firstEmojiMatch ? firstEmojiMatch[0] : '🎮');
+      const cleanName = rawTitle
+        .replace(/^[^\w\p{L}]+/u, '')
+        .split('—')[0]
+        .split(':')[0]
+        .trim();
+      const shot = g.screenshot
+        ? g.screenshot.startsWith('http')
+          ? g.screenshot
+          : `https://palladius.github.io/vetrina/${g.screenshot.replace(/^\//, '')}`
+        : prev.screenshot;
+
+      byId.set(g.id, {
+        ...prev,
+        id: g.id,
+        puffin_game_id: g.puffin_game_id || prev.puffin_game_id || g.id,
+        title: rawTitle,
+        shortTitle: prev.shortTitle || cleanName || g.id,
+        emoji,
+        play_url: g.play_url || prev.play_url || VETRINA_RING_HASH_URL,
+        repo_url: g.repo_url || prev.repo_url || '',
+        screenshot: shot,
+        supports_puffin_login: Boolean(isLiveRing),
+        status: isLiveRing ? 'live' : prev.status || 'upcoming',
+      });
+    }
+    _cachedRingApps = Array.from(byId.values());
+    _vetrinaRingSynced = true;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('puffin-ring-updated', { detail: _cachedRingApps }));
+    }
+  } catch {}
+  return _cachedRingApps;
+}
 
 let sharedLbSheet = null;
 function getLeaderboardStyleSheet() {
@@ -2861,8 +3156,10 @@ export class PuffinLeaderboardElement extends BaseElement {
     window.addEventListener('puffin-lang-changed', this._onScore);
     window.addEventListener('puffin-auth-updated', this._onScore);
     window.addEventListener('puffin-user-changed', this._onScore);
+    window.addEventListener('puffin-ring-updated', this._onScore);
     this.render();
     this.syncFromCloud();
+    syncPuffinRingFromVetrina();
   }
 
   async syncFromCloud() {
@@ -2904,6 +3201,7 @@ export class PuffinLeaderboardElement extends BaseElement {
     window.removeEventListener('puffin-lang-changed', this._onScore);
     window.removeEventListener('puffin-auth-updated', this._onScore);
     window.removeEventListener('puffin-user-changed', this._onScore);
+    window.removeEventListener('puffin-ring-updated', this._onScore);
   }
 
   render() {
@@ -2989,7 +3287,13 @@ export class PuffinLeaderboardElement extends BaseElement {
             <div class="hof-hover-details">
               ${summaryHtml}
               <div>
-                <code>${entry.game_id}</code> • ⏱️ ${timeInfo.durationText} (${timeInfo.rangeText}) • 🌐 ${hostStr}${
+                ${(() => {
+                  const gInfo = resolveGameFromRing(entry.game_id);
+                  if (gInfo && gInfo.play_url) {
+                    return `<a class="hof-game-link" href="${gInfo.play_url}" target="_blank" rel="noopener" title="Play ${gInfo.shortTitle} (${gInfo.play_url})">${gInfo.emoji || '🎮'} ${entry.game_id} ↗</a>`;
+                  }
+                  return `<code>${entry.game_id}</code>`;
+                })()} • ⏱️ ${timeInfo.durationText} (${timeInfo.rangeText}) • 🌐 ${hostStr}${
         extraPairs ? ` • <code>${extraPairs}</code>` : ''
       }
               </div>
@@ -2999,7 +3303,49 @@ export class PuffinLeaderboardElement extends BaseElement {
       `;
     });
 
-    this.$list.innerHTML = adminHeaderHtml + rowsHtml.join('');
+    const ringApps = getPuffinRingApps();
+    const curGameId = (this.activeFilter !== 'ALL' ? this.activeFilter : resolvePuffinConfig().appId || '').toLowerCase();
+    const curIdx = Math.max(
+      0,
+      ringApps.findIndex(
+        (a) => a.id.toLowerCase() === curGameId || (a.puffin_game_id || '').toLowerCase() === curGameId
+      )
+    );
+    const prevApp = ringApps[(curIdx - 1 + ringApps.length) % ringApps.length] || ringApps[0];
+    const nextApp = ringApps[(curIdx + 1) % ringApps.length] || ringApps[0];
+    const ringHubUrl = this.getAttribute('ring-url') || './ring.html';
+
+    const ringPillsHtml = ringApps
+      .map((a) => {
+        const isLive = a.status === 'live';
+        const statusDot = isLive ? '🟢' : '🔜';
+        return `<a class="hof-ring-app-pill ${isLive ? 'is-live' : 'is-upcoming'}" href="${a.play_url}" target="_blank" rel="noopener" title="${a.title} (${isLive ? 'Live in Puffin Login Ring' : 'Coming Soon to Puffin Login Ring'})">${statusDot} ${a.emoji} ${a.shortTitle}</a>`;
+      })
+      .join('');
+
+    const ringFooterHtml = `
+      <div class="hof-ring-footer" role="navigation" aria-label="Puffin Login Ring WebRing">
+        <div class="hof-ring-nav">
+          <a class="hof-ring-step-btn" href="${prevApp.play_url}" target="_blank" rel="noopener" title="Previous App in Ring: ${prevApp.title}">
+            ⬅️ ${prevApp.emoji} ${prevApp.shortTitle}
+          </a>
+          <a class="hof-ring-hub-link" href="${ringHubUrl}" title="Open the Glorious Puffin Login Ring of Fire Hub!">
+            🔥💍 Puffin Login Ring (${ringApps.length} Apps)
+          </a>
+          <a class="hof-ring-step-btn" href="${nextApp.play_url}" target="_blank" rel="noopener" title="Next App in Ring: ${nextApp.title}">
+            ${nextApp.emoji} ${nextApp.shortTitle} ➡️
+          </a>
+        </div>
+        <div class="hof-ring-pills">
+          ${ringPillsHtml}
+          <a class="hof-ring-app-pill" href="${VETRINA_RING_HASH_URL}" target="_blank" rel="noopener" title="Filter all Puffin Login Ring apps on palladius/vetrina">
+            🎠 Vetrina #puffin-ring ↗
+          </a>
+        </div>
+      </div>
+    `;
+
+    this.$list.innerHTML = adminHeaderHtml + rowsHtml.join('') + ringFooterHtml;
 
     this.$list.querySelectorAll('.hof-row').forEach((row) => {
       const startVid = () => {
@@ -3265,7 +3611,490 @@ export const PuffinLogin = {
     }
     return true;
   },
+
+  getRingApps(options) {
+    return getPuffinRingApps(options);
+  },
+
+  syncRingFromVetrina() {
+    return syncPuffinRingFromVetrina();
+  },
 };
+
+const RING_CSS = `
+:host {
+  display: block;
+  font-family: 'Nunito', 'Quicksand', system-ui, -apple-system, sans-serif;
+  color: #f8fafc;
+}
+
+.ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+  width: 100%;
+}
+
+.ring-controls-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ring-mode-btn {
+  cursor: pointer;
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fde68a;
+  border: 1.5px solid rgba(251, 191, 36, 0.45);
+  transition: all 0.18s ease;
+}
+
+.ring-mode-btn.active,
+.ring-mode-btn:hover {
+  background: linear-gradient(135deg, #ea580c, #d97706);
+  color: #fff;
+  border-color: #fde047;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.55);
+}
+
+.ring-stage {
+  position: relative;
+  width: min(100%, 540px);
+  aspect-ratio: 1 / 1;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  border: 3px solid rgba(251, 191, 36, 0.65);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.78), 0 0 40px rgba(249, 115, 22, 0.35);
+  background: #070913;
+  user-select: none;
+}
+
+.ring-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.ring-orbit-wheel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: puffinOrbitSpin 32s linear infinite;
+}
+
+.ring-stage:hover .ring-orbit-wheel,
+.ring-stage:hover .ring-medallion-upright {
+  animation-play-state: paused;
+}
+
+@keyframes puffinOrbitSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes puffinOrbitCounterSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.ring-spoke {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--spoke-angle, 0deg)) translateY(calc(-1 * var(--orbit-radius, 188px)));
+}
+
+@media (max-width: 540px) {
+  .ring-spoke {
+    transform: rotate(var(--spoke-angle, 0deg)) translateY(-35vw);
+  }
+}
+
+.ring-spoke-unrotate {
+  transform: rotate(calc(-1 * var(--spoke-angle, 0deg)));
+}
+
+.ring-medallion-upright {
+  animation: puffinOrbitCounterSpin 32s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 0;
+  height: 0;
+  position: relative;
+}
+
+.ring-medallion {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  transition: scale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ring-medallion:hover,
+.ring-medallion:focus-visible {
+  scale: 1.22;
+  z-index: 30;
+}
+
+.ring-medallion-circle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #facc15;
+  background: #0f172a;
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.75), 0 6px 18px rgba(0, 0, 0, 0.85);
+  position: relative;
+}
+
+@media (max-width: 500px) {
+  .ring-medallion-circle {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.ring-medallion[data-status="live"] .ring-medallion-circle {
+  border-color: #34d399;
+  box-shadow: 0 0 24px rgba(52, 211, 153, 0.85), 0 0 12px rgba(250, 204, 21, 0.65);
+}
+
+.ring-medallion[data-status="upcoming"] .ring-medallion-circle {
+  border-color: #fbbf24;
+  border-style: dashed;
+}
+
+.ring-medallion[data-status="candidate"] .ring-medallion-circle {
+  border-color: #38bdf8;
+  opacity: 0.9;
+}
+
+.ring-medallion-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ring-medallion-status {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 0.58rem;
+  font-weight: 900;
+  padding: 0.1rem 0.36rem;
+  border-radius: 999px;
+  background: #064e3b;
+  color: #6ee7b7;
+  border: 1.5px solid #34d399;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+}
+
+.ring-medallion[data-status="upcoming"] .ring-medallion-status {
+  background: #451a03;
+  color: #fde68a;
+  border-color: #fbbf24;
+}
+
+.ring-medallion[data-status="candidate"] .ring-medallion-status {
+  background: #0c4a6e;
+  color: #bae6fd;
+  border-color: #38bdf8;
+}
+
+.ring-medallion-label {
+  margin-top: 0.28rem;
+  background: rgba(9, 13, 28, 0.92);
+  color: #fef08a;
+  border: 1.5px solid rgba(250, 204, 21, 0.6);
+  border-radius: 999px;
+  padding: 0.14rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.85);
+}
+
+.ring-geocities-bar {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, rgba(45, 20, 8, 0.92), rgba(20, 16, 42, 0.95), rgba(45, 20, 8, 0.92));
+  border: 1.5px solid rgba(251, 146, 60, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 640px) {
+  .ring-geocities-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.ring-geo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.34rem 0.62rem;
+  border-radius: 0.65rem;
+  background: rgba(15, 23, 42, 0.9);
+  color: #fde047;
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ring-geo-btn:hover {
+  background: rgba(234, 88, 12, 0.32);
+  color: #fff;
+  border-color: #facc15;
+  transform: translateY(-1px);
+}
+
+.ring-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.ring-app-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.95rem;
+  background: rgba(17, 24, 39, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  text-decoration: none;
+  color: #f8fafc;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.ring-app-card:hover {
+  transform: translateY(-2px);
+  border-color: #facc15;
+}
+
+.ring-app-card.is-live {
+  border-color: rgba(52, 211, 153, 0.55);
+}
+
+.ring-app-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #facc15;
+  flex-shrink: 0;
+}
+
+.ring-app-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.ring-app-title {
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #fef08a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ring-app-url {
+  font-size: 0.66rem;
+  color: #94a3b8;
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+`;
+
+export class PuffinRingElement extends BaseElement {
+  static get observedAttributes() {
+    return ['include-candidates', 'bg-src'];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    const styleEl = document.createElement('style');
+    styleEl.textContent = RING_CSS;
+    this.shadowRoot.append(styleEl);
+    this.$root = document.createElement('div');
+    this.$root.className = 'ring-wrap';
+    this.shadowRoot.append(this.$root);
+    this.includeCandidates = this.hasAttribute('include-candidates');
+    this._onRingUpdate = () => this.render();
+  }
+
+  connectedCallback() {
+    this.includeCandidates = this.hasAttribute('include-candidates');
+    window.addEventListener('puffin-ring-updated', this._onRingUpdate);
+    this.render();
+    syncPuffinRingFromVetrina();
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('puffin-ring-updated', this._onRingUpdate);
+  }
+
+  attributeChangedCallback() {
+    if (this.isConnected) {
+      this.includeCandidates = this.hasAttribute('include-candidates');
+      this.render();
+    }
+  }
+
+  render() {
+    const apps = getPuffinRingApps({ includeCandidates: this.includeCandidates });
+    const total = apps.length || 1;
+    const bgSrc = this.getAttribute('bg-src') || './assets/puffin-ring.png';
+
+    const spokesHtml = apps
+      .map((app, idx) => {
+        const angleDeg = Math.round((360 / total) * idx);
+        const statusLabel =
+          app.status === 'live' ? '🟢 LIVE' : app.status === 'upcoming' ? '🔜 NEXT' : '📋 CANDIDATE';
+        return `
+          <div class="ring-spoke" style="--spoke-angle: ${angleDeg}deg; --orbit-radius: 196px;">
+            <div class="ring-spoke-unrotate" style="--spoke-angle: ${angleDeg}deg;">
+              <div class="ring-medallion-upright">
+                <a class="ring-medallion" href="${app.play_url}" target="_blank" rel="noopener" data-status="${app.status}" data-ring-id="${app.id}" title="${app.title} — ${app.play_url}">
+                  <div class="ring-medallion-circle">
+                    <img class="ring-medallion-img" src="${app.screenshot}" alt="${app.shortTitle}" loading="lazy" />
+                  </div>
+                  <span class="ring-medallion-status">${statusLabel}</span>
+                  <span class="ring-medallion-label">${app.emoji} ${app.shortTitle}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    const cardsHtml = apps
+      .map((app) => {
+        const badge =
+          app.status === 'live'
+            ? '🟢 Live in Ring (supports_puffin_login: true)'
+            : app.status === 'upcoming'
+            ? '🔜 Arriving Next in Ring'
+            : '📋 Future Candidate';
+        return `
+          <a class="ring-app-card ${app.status === 'live' ? 'is-live' : ''}" href="${app.play_url}" target="_blank" rel="noopener">
+            <img class="ring-app-thumb" src="${app.screenshot}" alt="${app.shortTitle}" loading="lazy" />
+            <div class="ring-app-meta">
+              <div class="ring-app-title">${app.emoji} ${app.shortTitle}</div>
+              <div style="font-size:0.68rem; color:#fde68a; font-weight:700;">${badge}</div>
+              <div class="ring-app-url">${app.play_url}</div>
+            </div>
+          </a>
+        `;
+      })
+      .join('');
+
+    const firstApp = apps[0];
+    const lastApp = apps[apps.length - 1] || firstApp;
+
+    this.$root.innerHTML = `
+      <div class="ring-controls-top">
+        <button type="button" class="ring-mode-btn ${!this.includeCandidates ? 'active' : ''}" data-mode="core">
+          🔥 Core Ring (${getPuffinRingApps({ includeCandidates: false }).length} Apps: Snake + Jigsaw)
+        </button>
+        <button type="button" class="ring-mode-btn ${this.includeCandidates ? 'active' : ''}" data-mode="all">
+          🌌 Preview Full N-App Orbit (${getPuffinRingApps({ includeCandidates: true }).length} Apps)
+        </button>
+      </div>
+
+      <div class="ring-stage" aria-label="Rotating Puffin Login Ring of Fire">
+        <img class="ring-bg-img" src="${bgSrc}" alt="Puffin Login Ring of Fire" />
+        <div class="ring-orbit-wheel">
+          ${spokesHtml}
+        </div>
+      </div>
+
+      <div class="ring-geocities-bar">
+        <a class="ring-geo-btn" href="${lastApp.play_url}" target="_blank" rel="noopener">
+          ⬅️ Prev: ${lastApp.emoji} ${lastApp.shortTitle}
+        </a>
+        <a class="ring-geo-btn" href="${VETRINA_RING_HASH_URL}" target="_blank" rel="noopener">
+          🎠 Central Registry: palladius/vetrina (#puffin-ring) ↗
+        </a>
+        <button type="button" class="ring-geo-btn" data-action="random">
+          🎲 Random Ring App
+        </button>
+        <a class="ring-geo-btn" href="${firstApp.play_url}" target="_blank" rel="noopener">
+          Next: ${firstApp.emoji} ${firstApp.shortTitle} ➡️
+        </a>
+      </div>
+
+      <div class="ring-cards-grid">
+        ${cardsHtml}
+      </div>
+    `;
+
+    this.$root.querySelectorAll('[data-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.getAttribute('data-mode');
+        this.includeCandidates = mode === 'all';
+        this.render();
+      });
+    });
+
+    const randBtn = this.$root.querySelector('[data-action="random"]');
+    if (randBtn) {
+      randBtn.addEventListener('click', () => {
+        const pick = apps[Math.floor(Math.random() * apps.length)] || firstApp;
+        if (pick?.play_url) {
+          window.open(pick.play_url, '_blank', 'noopener');
+        }
+      });
+    }
+  }
+}
 
 if (typeof customElements !== 'undefined') {
   if (!customElements.get('puffin-login')) {
@@ -3273,6 +4102,9 @@ if (typeof customElements !== 'undefined') {
   }
   if (!customElements.get('puffin-leaderboard')) {
     customElements.define('puffin-leaderboard', PuffinLeaderboardElement);
+  }
+  if (!customElements.get('puffin-ring')) {
+    customElements.define('puffin-ring', PuffinRingElement);
   }
 }
 
