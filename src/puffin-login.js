@@ -366,6 +366,66 @@ export const DEFAULT_DUMMY_SCORES = Object.freeze([
     is_dummy_seed: true,
   },
   {
+    id: 'scr_seed_10_ricc_tubature',
+    game_id: 'tubature',
+    player_id: 'riccardo',
+    score: 4450,
+    started_at: '2026-11-07T15:10:00Z',
+    ended_at: '2026-11-07T15:12:30Z',
+    duration_sec: 150,
+    hostname: 'pupurabbux.tailnet.lan',
+    ip_address: '100.94.27.10',
+    device: 'Linux RTX 5080 (Chrome)',
+    summary_text: 'Dad Riccardo connected all 64 dungeon conduits on Hard (8x8) in 38 moves!',
+    extra: {
+      level: 7,
+      difficulty: 'Hard',
+      grid: '8x8',
+      moves: 38,
+    },
+    is_dummy_seed: true,
+  },
+  {
+    id: 'scr_seed_11_ale_tubature',
+    game_id: 'tubature',
+    player_id: 'ale',
+    score: 3650,
+    started_at: '2026-11-07T15:18:00Z',
+    ended_at: '2026-11-07T15:20:10Z',
+    duration_sec: 130,
+    hostname: 'ipad-ale.lan',
+    ip_address: '192.168.1.44',
+    device: 'iPad Air',
+    summary_text: 'Ale unlocked 3 Dragon Gems ampolle on Medium (6x6) in 22 moves!',
+    extra: {
+      level: 4,
+      difficulty: 'Medium',
+      grid: '6x6',
+      moves: 22,
+    },
+    is_dummy_seed: true,
+  },
+  {
+    id: 'scr_seed_12_seby_tubature',
+    game_id: 'tubature',
+    player_id: 'seby',
+    score: 2950,
+    started_at: '2026-11-07T15:22:00Z',
+    ended_at: '2026-11-07T15:23:45Z',
+    duration_sec: 105,
+    hostname: 'ipad-seby.lan',
+    ip_address: '192.168.1.45',
+    device: 'iPad Mini',
+    summary_text: 'Seby flooded the 5x5 Emerald Dragon dungeon in 14 moves!',
+    extra: {
+      level: 2,
+      difficulty: 'Easy',
+      grid: '5x5',
+      moves: 14,
+    },
+    is_dummy_seed: true,
+  },
+  {
     id: 'scr_seed_06_riccardo_chess',
     game_id: 'carchess3d',
     player_id: 'riccardo',
@@ -2959,6 +3019,18 @@ export const PUFFIN_LOGIN_RING_DEFAULT = [
     status: 'live',
   },
   {
+    id: 'tubature',
+    puffin_game_id: 'tubature',
+    title: '🚰 Tubature: The Dungeon Plumber',
+    shortTitle: 'Tubature',
+    emoji: '🚰',
+    play_url: 'https://palladius.github.io/tubature/',
+    repo_url: 'https://github.com/palladius/tubature',
+    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/tubature.jpg',
+    supports_puffin_login: true,
+    status: 'live',
+  },
+  {
     id: 'kids-jigsaw-puzzle',
     puffin_game_id: 'kids-jigsaw-puzzle',
     title: '🧩 Kids Jigsaw Puzzle',
@@ -2994,18 +3066,6 @@ export const PUFFIN_LOGIN_RING_CANDIDATES = [
     play_url: 'https://palladius.github.io/family-mahjong-3d/',
     repo_url: 'https://github.com/palladius/family-mahjong-3d',
     screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/family-mahjong-3d.jpg',
-    supports_puffin_login: false,
-    status: 'candidate',
-  },
-  {
-    id: 'tubature',
-    puffin_game_id: 'tubature',
-    title: '🚰 Tubature Plumber',
-    shortTitle: 'Tubature',
-    emoji: '🚰',
-    play_url: 'https://palladius.github.io/tubature/',
-    repo_url: 'https://github.com/palladius/tubature',
-    screenshot: 'https://palladius.github.io/vetrina/assets/screenshots/tubature.jpg',
     supports_puffin_login: false,
     status: 'candidate',
   },
@@ -4042,7 +4102,7 @@ export class PuffinRingElement extends BaseElement {
     this.$root.innerHTML = `
       <div class="ring-controls-top">
         <button type="button" class="ring-mode-btn ${!this.includeCandidates ? 'active' : ''}" data-mode="core">
-          🔥 Core Ring (${getPuffinRingApps({ includeCandidates: false }).length} Apps: Snake + Jigsaw)
+          🔥 Core Ring (${getPuffinRingApps({ includeCandidates: false }).length} Apps: ${getPuffinRingApps({ includeCandidates: false }).map((a) => a.shortTitle).join(' + ')})
         </button>
         <button type="button" class="ring-mode-btn ${this.includeCandidates ? 'active' : ''}" data-mode="all">
           🌌 Preview Full N-App Orbit (${getPuffinRingApps({ includeCandidates: true }).length} Apps)
