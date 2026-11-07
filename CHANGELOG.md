@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.1] - 2026-11-07
+
+### Changed
+- **2-Row × 4-Column "Who's playing?" Grid Layout**: Top row has the 4 Carlessos (`Riccardo`, `Kate`, `Ale`, `Seby`); bottom row has `Nonna` on the left, an empty spacer slot, and `Guest` + `Saga` (UAT Bot) on the right.
+
 ## [1.3.0] - 2026-11-07
 
 ### Added

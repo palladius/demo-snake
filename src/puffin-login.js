@@ -857,13 +857,13 @@ const COMPONENT_CSS = `
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
-/* 2. COMPACT FAMILY SELECTOR DIALOG (max-width: 500px for 7 heroes incl. Saga UAT Bot) */
+/* 2. COMPACT FAMILY SELECTOR DIALOG (2 rows x 4 cols: Top = 4 Carlessos, Bottom = Nonna + Spacer + Guest + Saga) */
 dialog {
   border: none;
   padding: 0;
   background: transparent;
   color: var(--puffin-text);
-  max-width: min(95vw, 500px);
+  max-width: min(95vw, 440px);
   width: 100%;
   margin: auto;
 }
@@ -984,25 +984,27 @@ dialog::backdrop {
   scale: 1.08;
 }
 
-/* COMPACT 7-HERO FAMILY + SAGA UAT BOT SELECTOR STRIP */
+/* 2-ROW x 4-COL FAMILY + BOT SELECTOR GRID:
+   Row 1: Riccardo | Kate   | Ale   | Seby
+   Row 2: Nonna    | [empty]| Guest | Saga (UAT Bot) */
 .profiles-strip {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.3rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.48rem;
   padding: 0.25rem 0;
 }
 
-@media (max-width: 440px) {
-  .profiles-strip {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.profile-grid-spacer {
+  pointer-events: none;
+  visibility: hidden;
+  min-height: 1px;
 }
 
 .profile-card {
   background: var(--puffin-card-bg);
   border: 2px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.95rem;
-  padding: 0.38rem 0.2rem 0.42rem;
+  padding: 0.45rem 0.28rem 0.48rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1041,13 +1043,13 @@ dialog::backdrop {
 }
 
 .card-avatar-frame {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
   border-radius: var(--puffin-radius);
   overflow: hidden;
   border: 2.5px solid var(--card-color, #FACC15);
   background: #0d0f1d;
-  margin-bottom: 0.28rem;
+  margin-bottom: 0.3rem;
   position: relative;
   translate: 0px;
   rotate: -2deg;
@@ -1087,7 +1089,7 @@ dialog::backdrop {
 }
 
 .card-name {
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -1835,6 +1837,7 @@ export class PuffinLoginElement extends BaseElement {
 
       const card = document.createElement('button');
       card.type = 'button';
+      card.dataset.profileId = p.id;
       card.className = `profile-card ${isSelected ? 'selected' : ''} ${
         isGuestHighlighted ? 'guest-highlight' : ''
       }`;
@@ -1859,6 +1862,15 @@ export class PuffinLoginElement extends BaseElement {
         card.addEventListener('click', () => this.selectCandidate(p));
       }
       this.$grid.appendChild(card);
+
+      // Row 1: Riccardo, Kate, Ale, Seby (4 cols)
+      // Row 2: Nonna Lucilla (col 1), [empty spacer] (col 2), Guest (col 3), Saga UAT Bot (col 4)
+      if (p.id === 'lucilla') {
+        const spacer = document.createElement('div');
+        spacer.className = 'profile-grid-spacer';
+        spacer.setAttribute('aria-hidden', 'true');
+        this.$grid.appendChild(spacer);
+      }
     }
   }
 
