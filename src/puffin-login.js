@@ -150,6 +150,24 @@ export const PUFFIN_PROFILES = Object.freeze([
     avatar: 'assets/avatars/guest.png',
     faceFocusY: '25%',
   },
+  {
+    id: 'saga',
+    aliases: ['gemini', 'uat', 'bot', 'agy', 'saga-gemini'],
+    displayName: 'Saga di Gemini (UAT Bot)',
+    displayNameEn: 'Gemini Saga (UAT Bot)',
+    shortName: 'Saga',
+    rpgClass: 'Gold Saint Bot • UAT',
+    emoji: '♊',
+    role: 'bot',
+    authType: 'password',
+    secretHash: '5ac3918812d0e665b215336daca02dea39b9908ae3169b2cc2e7774c50706893',
+    email: 'palladiusbonton+saga-uat@gmail.com',
+    colorName: 'Ciano Cosmo',
+    colorHex: '#22D3EE',
+    glowHex: 'rgba(34, 211, 238, 0.45)',
+    avatar: 'assets/avatars/saga.png',
+    faceFocusY: '26%',
+  },
 ]);
 
 export const NULL_PLAYER_PROFILE = Object.freeze({
@@ -839,13 +857,13 @@ const COMPONENT_CSS = `
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
-/* 2. COMPACT FAMILY SELECTOR DIALOG (max-width: 440px) */
+/* 2. COMPACT FAMILY SELECTOR DIALOG (max-width: 500px for 7 heroes incl. Saga UAT Bot) */
 dialog {
   border: none;
   padding: 0;
   background: transparent;
   color: var(--puffin-text);
-  max-width: min(94vw, 440px);
+  max-width: min(95vw, 500px);
   width: 100%;
   margin: auto;
 }
@@ -966,12 +984,18 @@ dialog::backdrop {
   scale: 1.08;
 }
 
-/* COMPACT 6-PERSON FAMILY SELECTOR STRIP */
+/* COMPACT 7-HERO FAMILY + SAGA UAT BOT SELECTOR STRIP */
 .profiles-strip {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0.32rem;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.3rem;
   padding: 0.25rem 0;
+}
+
+@media (max-width: 440px) {
+  .profiles-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .profile-card {

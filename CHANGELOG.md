@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2026-11-07
+
+### Added
+- **Saga di Gemini (`saga`) — Dedicated Antigravity UAT Bot Profile (7th Hero)**: Added [`assets/avatars/saga.png`](assets/avatars/saga.png) (AI Robot wearing the golden Gemini Gold Saint helmet from *Saint Seiya / I Cavalieri dello Zodiaco*) as the last profile in `<puffin-login>`, reserved exclusively for automated UAT tests.
+
 ## [1.2.0] - 2026-11-07
 
 ### Added
