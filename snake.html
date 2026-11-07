@@ -376,7 +376,6 @@
         <button type="button" class="dpad-btn" data-dir="UP" aria-label="Up">⬆️</button>
         <span></span>
         <button type="button" class="dpad-btn" data-dir="LEFT" aria-label="Left">⬅️</button>
-        <span></span>
         <button type="button" class="dpad-btn" data-dir="DOWN" aria-label="Down">⬇️</button>
         <button type="button" class="dpad-btn" data-dir="RIGHT" aria-label="Right">➡️</button>
       </div>
@@ -664,28 +663,30 @@
       drawBoard();
     }
 
-    async function triggerGameOver(cause = 'wall_crash') {
+    async function triggerGameOver(cause = 'wall_crash', { skipSubmit = false } = {}) {
       if (isGameOver || !PuffinLogin.getCurrentUser()) return;
       isGameOver = true;
       dirQueue = [];
       stopAllTimers();
 
-      const endedAt = new Date().toISOString();
-      const user = PuffinLogin.getCurrentUser();
-      await PuffinLogin.submitScore({
-        game_id: 'puffin-snake',
-        score,
-        started_at: matchStartedAt,
-        ended_at: endedAt,
-        summary_text: `${user.shortName}: ${score}`,
-        extra: {
-          apples_eaten: applesEaten,
-          snake_length: snake.length,
-          difficulty: currentDifficulty,
-          schema_hash: 'snake_grid_20x13',
-          death_cause: cause,
-        },
-      });
+      if (!skipSubmit) {
+        const endedAt = new Date().toISOString();
+        const user = PuffinLogin.getCurrentUser();
+        await PuffinLogin.submitScore({
+          game_id: 'puffin-snake',
+          score,
+          started_at: matchStartedAt,
+          ended_at: endedAt,
+          summary_text: `${user.shortName}: ${score}`,
+          extra: {
+            apples_eaten: applesEaten,
+            snake_length: snake.length,
+            difficulty: currentDifficulty,
+            schema_hash: 'snake_grid_20x13',
+            death_cause: cause,
+          },
+        });
+      }
 
       await refreshRecordTip();
       drawBoard();
@@ -937,7 +938,7 @@
 
     if (params.get('gameover') === '1' && PuffinLogin.getCurrentUser()) {
       stopAllTimers();
-      triggerGameOver('wall_crash');
+      triggerGameOver('wall_crash', { skipSubmit: true });
     }
 
     if (params.get('wrong')) {
