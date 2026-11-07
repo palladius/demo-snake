@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2026-11-07
+
+### Added
+- **Veo 3.1 Animated Portrait Support**: Hovering or selecting a profile card plays the character's Veo 3.1 animation (`assets/avatars/<id>.mp4`).
+- **Always Black & White Guest (`guest`)**: Anonymous/Guest avatar is always rendered in crisp monochrome (`grayscale(100%)`).
+- **Robot `<tt>` Typography for UAT Bot (`<Saga/>`)**: Styled `saga` with `<tt class="robot-tt">&lt;Saga/&gt;</tt>` monospace terminal font and a dashed cyan circuit border.
+
 ## [1.3.1] - 2026-11-07
 
 ### Changed

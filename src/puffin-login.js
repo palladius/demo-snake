@@ -58,6 +58,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#FACC15',
     glowHex: 'rgba(250, 204, 21, 0.45)',
     avatar: 'assets/avatars/riccardo.png',
+    video: 'assets/avatars/riccardo.mp4',
     faceFocusY: '26%',
   },
   {
@@ -76,6 +77,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#A855F7',
     glowHex: 'rgba(168, 85, 247, 0.45)',
     avatar: 'assets/avatars/kate.png',
+    video: 'assets/avatars/kate.mp4',
     faceFocusY: '25%',
   },
   {
@@ -94,6 +96,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#EF4444',
     glowHex: 'rgba(239, 68, 68, 0.45)',
     avatar: 'assets/avatars/ale.png',
+    video: 'assets/avatars/ale.mp4',
     faceFocusY: '24%',
   },
   {
@@ -112,6 +115,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#3B82F6',
     glowHex: 'rgba(59, 130, 246, 0.45)',
     avatar: 'assets/avatars/seby.png',
+    video: 'assets/avatars/seby.mp4',
     faceFocusY: '24%',
   },
   {
@@ -130,6 +134,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#EC4899',
     glowHex: 'rgba(236, 72, 153, 0.45)',
     avatar: 'assets/avatars/lucilla.png',
+    video: 'assets/avatars/lucilla.mp4',
     faceFocusY: '26%',
   },
   {
@@ -148,6 +153,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#9CA3AF',
     glowHex: 'rgba(156, 163, 175, 0.40)',
     avatar: 'assets/avatars/guest.png',
+    video: 'assets/avatars/guest.mp4',
     faceFocusY: '25%',
   },
   {
@@ -166,6 +172,7 @@ export const PUFFIN_PROFILES = Object.freeze([
     colorHex: '#22D3EE',
     glowHex: 'rgba(34, 211, 238, 0.45)',
     avatar: 'assets/avatars/saga.png',
+    video: 'assets/avatars/saga.mp4',
     faceFocusY: '26%',
   },
 ]);
@@ -1080,6 +1087,22 @@ dialog::backdrop {
               object-position 0.34s ease;
 }
 
+.card-avatar-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.profile-card.video-playing .card-avatar-video {
+  opacity: 1;
+}
+
 .profile-card:hover:not([disabled]) .card-avatar-img,
 .profile-card:focus-visible:not([disabled]) .card-avatar-img,
 .profile-card.selected .card-avatar-img {
@@ -1088,11 +1111,44 @@ dialog::backdrop {
   scale: 1.0;
 }
 
+/* GUEST / ANONYMOUS: ALWAYS BLACK & WHITE (even on hover or when active!) */
+.profile-card[data-profile-id="guest"] .card-avatar-frame,
+.profile-card[data-profile-id="guest"] .card-avatar-img,
+.profile-card[data-profile-id="guest"] .card-avatar-video,
+.puffin-badge-btn[data-user-id="guest"] .badge-avatar-wrap,
+.puffin-badge-btn[data-user-id="guest"] .badge-avatar-img {
+  filter: grayscale(100%) contrast(1.12);
+}
+
+.profile-card[data-profile-id="guest"] .card-name {
+  color: #cbd5e1;
+}
+
+/* UAT BOT (SAGA): ROBOT <tt> MONOSPACE FONT & TERMINAL CIRCUIT CARD */
+.profile-card[data-profile-id="saga"] {
+  border-style: dashed;
+  border-color: rgba(34, 211, 238, 0.45);
+  background: linear-gradient(180deg, rgba(8, 28, 44, 0.92) 0%, rgba(12, 18, 34, 0.96) 100%);
+}
+
+.robot-tt {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #22d3ee;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 4px;
+  padding: 0.04rem 0.26rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.55);
+}
+
 .card-name {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1789,6 +1845,7 @@ export class PuffinLoginElement extends BaseElement {
     const tr = this.t();
     if (!user) {
       // Unauthenticated (identity === NULL)
+      this.$badgeBtn.dataset.userId = 'null';
       this.$badgeBtn.style.setProperty('--active-color', '#F97316');
       this.$badgeBtn.style.setProperty('--active-glow', 'rgba(249, 115, 22, 0.35)');
       this.$badgeImg.hidden = true;
@@ -1797,13 +1854,51 @@ export class PuffinLoginElement extends BaseElement {
       return;
     }
     // Ultra-minimalist badge: ONLY Icon + Name (no emoji, no subtitles!)
+    this.$badgeBtn.dataset.userId = user.id;
     this.$badgeBtn.style.setProperty('--active-color', user.colorHex);
     this.$badgeBtn.style.setProperty('--active-glow', user.glowHex);
     this.$badgeImg.src = `${this.config.assetBaseUrl}/${user.avatar}`.replace(/\/\//g, '/');
     this.$badgeImg.alt = user.shortName;
     this.$badgeImg.hidden = false;
     this.$badgeLock.hidden = true;
-    this.$badgeName.textContent = user.shortName;
+    if (user.role === 'bot') {
+      this.$badgeName.innerHTML = `<tt class="robot-tt">&lt;${user.shortName}/&gt;</tt>`;
+    } else {
+      this.$badgeName.textContent = user.shortName;
+    }
+  }
+
+  _startCardVideo(card) {
+    const vid = card.querySelector('.card-avatar-video');
+    if (!vid || vid.dataset.failed === '1') return;
+    if (!vid.src && vid.dataset.src) {
+      vid.src = vid.dataset.src;
+      vid.addEventListener(
+        'error',
+        () => {
+          vid.dataset.failed = '1';
+          card.classList.remove('video-playing');
+        },
+        { once: true }
+      );
+      vid.addEventListener('playing', () => {
+        card.classList.add('video-playing');
+      });
+    }
+    const p = vid.play();
+    if (p && typeof p.catch === 'function') {
+      p.catch(() => {});
+    }
+  }
+
+  _stopCardVideo(card, keepIfSelected = true) {
+    if (keepIfSelected && card.classList.contains('selected')) return;
+    const vid = card.querySelector('.card-avatar-video');
+    if (!vid) return;
+    card.classList.remove('video-playing');
+    try {
+      vid.pause();
+    } catch {}
   }
 
   renderModalContent() {
@@ -1850,18 +1945,37 @@ export class PuffinLoginElement extends BaseElement {
       }
 
       const imgSrc = `${this.config.assetBaseUrl}/${p.avatar}`.replace(/\/\//g, '/');
+      const videoSrc = p.video
+        ? `${this.config.assetBaseUrl}/${p.video}`.replace(/\/\//g, '/')
+        : '';
+      const nameHtml =
+        p.role === 'bot' ? `<tt class="robot-tt">&lt;${p.shortName}/&gt;</tt>` : p.shortName;
+
       card.innerHTML = `
         ${lock.jammed ? '<span class="jam-badge" title="Jammed!">!</span>' : ''}
         <div class="card-avatar-frame">
           <img class="card-avatar-img" src="${imgSrc}" alt="${p.shortName}" loading="lazy" />
+          ${
+            videoSrc
+              ? `<video class="card-avatar-video" data-src="${videoSrc}" muted loop playsinline preload="none"></video>`
+              : ''
+          }
         </div>
-        <div class="card-name">${p.shortName}</div>
+        <div class="card-name">${nameHtml}</div>
       `;
 
       if (policy.allowed) {
         card.addEventListener('click', () => this.selectCandidate(p));
+        card.addEventListener('mouseenter', () => this._startCardVideo(card));
+        card.addEventListener('focus', () => this._startCardVideo(card));
+        card.addEventListener('mouseleave', () => this._stopCardVideo(card, true));
+        card.addEventListener('blur', () => this._stopCardVideo(card, true));
       }
       this.$grid.appendChild(card);
+
+      if (isSelected && policy.allowed) {
+        setTimeout(() => this._startCardVideo(card), 50);
+      }
 
       // Row 1: Riccardo, Kate, Ale, Seby (4 cols)
       // Row 2: Nonna Lucilla (col 1), [empty spacer] (col 2), Guest (col 3), Saga UAT Bot (col 4)
@@ -2295,6 +2409,24 @@ const LEADERBOARD_CSS = `
   text-overflow: ellipsis;
 }
 
+.hof-row[data-player-id="guest"] .lb-avatar-wrap,
+.hof-row[data-player-id="null"] .lb-avatar-wrap {
+  filter: grayscale(100%) contrast(1.12);
+}
+
+.robot-tt {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #22d3ee;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 4px;
+  padding: 0.04rem 0.3rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.55);
+}
+
 .hof-score {
   font-size: 1.05rem;
   font-weight: 900;
@@ -2563,15 +2695,20 @@ export class PuffinLeaderboardElement extends BaseElement {
         `
         : '';
 
+      const nameHtml =
+        profile.role === 'bot'
+          ? `<tt class="robot-tt">&lt;${profile.shortName}/&gt;</tt>`
+          : profile.shortName;
+
       return `
-        <div class="hof-row" role="listitem" tabindex="0" data-rank="${rank}" style="--row-color: ${profile.colorHex}">
+        <div class="hof-row" role="listitem" tabindex="0" data-rank="${rank}" data-player-id="${profile.id || 'null'}" style="--row-color: ${profile.colorHex}">
           <div class="hof-main">
             <div class="hof-left">
               <span class="hof-rank">${rank}</span>
               <div class="lb-avatar-wrap">
                 <img class="lb-avatar-img" src="${profile.avatar}" alt="${profile.shortName}" loading="lazy" />
               </div>
-              <span class="hof-name">${profile.shortName}</span>
+              <span class="hof-name">${nameHtml}</span>
             </div>
             <div class="hof-right-group">
               <span class="hof-score">${Number(entry.score).toLocaleString('en-US')}</span>
