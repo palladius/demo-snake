@@ -159,9 +159,9 @@ export const PUFFIN_PROFILES = Object.freeze([
   {
     id: 'saga',
     aliases: ['gemini', 'uat', 'bot', 'agy', 'saga-gemini'],
-    displayName: 'Saga di Gemini (UAT Bot)',
-    displayNameEn: 'Gemini Saga (UAT Bot)',
-    shortName: 'Saga',
+    displayName: 'bot (Saga di Gemini UAT)',
+    displayNameEn: 'bot (Gemini Saga UAT)',
+    shortName: 'bot',
     rpgClass: 'Gold Saint Bot • UAT',
     emoji: '♊',
     role: 'bot',
@@ -864,13 +864,13 @@ const COMPONENT_CSS = `
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
-/* 2. COMPACT FAMILY SELECTOR DIALOG (2 rows x 4 cols: Top = 4 Carlessos, Bottom = Nonna + Spacer + Guest + Saga) */
+/* 2. COMPACT FAMILY SELECTOR DIALOG (2 rows x 4 cols + 3x3 Hero Spotlight Stage) */
 dialog {
   border: none;
   padding: 0;
   background: transparent;
   color: var(--puffin-text);
-  max-width: min(95vw, 440px);
+  max-width: min(96vw, 520px);
   width: 100%;
   margin: auto;
 }
@@ -1028,14 +1028,22 @@ dialog::backdrop {
 }
 
 .profile-card:hover:not([disabled]),
-.profile-card:focus-visible:not([disabled]),
-.profile-card.selected {
-  scale: 1.06;
+.profile-card:focus-visible:not([disabled]) {
+  scale: 1.22;
   border-color: var(--card-color, #FACC15);
-  box-shadow: 0 6px 18px var(--card-glow, rgba(250, 204, 21, 0.35));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.72), 0 0 18px var(--card-glow, rgba(250, 204, 21, 0.45));
   background: #252b4d;
   outline: none;
-  z-index: 2;
+  z-index: 25;
+}
+
+.profile-card.selected {
+  scale: 1.08;
+  border-color: var(--card-color, #FACC15);
+  box-shadow: 0 6px 18px var(--card-glow, rgba(250, 204, 21, 0.45));
+  background: #252b4d;
+  outline: none;
+  z-index: 5;
 }
 
 .profile-card.guest-highlight {
@@ -1116,7 +1124,8 @@ dialog::backdrop {
 .profile-card[data-profile-id="guest"] .card-avatar-img,
 .profile-card[data-profile-id="guest"] .card-avatar-video,
 .puffin-badge-btn[data-user-id="guest"] .badge-avatar-wrap,
-.puffin-badge-btn[data-user-id="guest"] .badge-avatar-img {
+.puffin-badge-btn[data-user-id="guest"] .badge-avatar-img,
+.drawer-hero-frame[data-hero-id="guest"] {
   filter: grayscale(100%) contrast(1.12);
 }
 
@@ -1124,23 +1133,58 @@ dialog::backdrop {
   color: #cbd5e1;
 }
 
-/* UAT BOT (SAGA): ROBOT <tt> MONOSPACE FONT & TERMINAL CIRCUIT CARD */
+/* UAT BOT (bot / saga): ROBOT <tt> MONOSPACE FONT, NON-SELECTABLE BY HUMANS + HOVER TOOLTIP */
 .profile-card[data-profile-id="saga"] {
   border-style: dashed;
   border-color: rgba(34, 211, 238, 0.45);
   background: linear-gradient(180deg, rgba(8, 28, 44, 0.92) 0%, rgba(12, 18, 34, 0.96) 100%);
+  cursor: not-allowed;
+}
+
+.profile-card[data-profile-id="saga"]:hover,
+.profile-card[data-profile-id="saga"]:focus-visible,
+.profile-card[data-profile-id="saga"].bot-tooltip-flash {
+  z-index: 60;
+}
+
+.bot-only-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: #091526;
+  color: #67e8f9;
+  border: 1.5px solid #22d3ee;
+  border-radius: 0.6rem;
+  padding: 0.32rem 0.55rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.66rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.85), 0 0 12px rgba(34, 211, 238, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  translate: 0px 4px;
+  transition: opacity 0.18s ease, translate 0.18s ease;
+  z-index: 60;
+}
+
+.profile-card[data-profile-id="saga"]:hover .bot-only-tooltip,
+.profile-card[data-profile-id="saga"]:focus-visible .bot-only-tooltip,
+.profile-card[data-profile-id="saga"].bot-tooltip-flash .bot-only-tooltip {
+  opacity: 1;
+  translate: 0px 0px;
 }
 
 .robot-tt {
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', Courier, monospace;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 900;
   color: #22d3ee;
   background: rgba(6, 182, 212, 0.16);
   border: 1px solid rgba(34, 211, 238, 0.45);
   border-radius: 4px;
-  padding: 0.04rem 0.26rem;
-  letter-spacing: 0.02em;
+  padding: 0.04rem 0.32rem;
+  letter-spacing: 0.03em;
   text-shadow: 0 0 8px rgba(34, 211, 238, 0.55);
 }
 
@@ -1175,23 +1219,101 @@ dialog::backdrop {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* 3. SUPER CUTIE KIDS PIN PAD (X X X X) & ADULT AUTH DRAWER */
+/* 3. 3x3 HERO SPOTLIGHT STAGE (174x174px = 3x of 58px!) + AUTH DRAWER */
 .auth-drawer {
-  margin-top: 0.65rem;
-  padding: 0.8rem 0.85rem;
-  border-radius: 1.1rem;
-  background: radial-gradient(circle at top, rgba(35, 42, 78, 0.95) 0%, rgba(15, 18, 34, 0.98) 100%);
+  margin-top: 0.7rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 1.15rem;
+  background: radial-gradient(circle at top left, rgba(35, 42, 78, 0.96) 0%, rgba(13, 16, 32, 0.99) 100%);
   border: 2.5px solid var(--drawer-color, #FACC15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.55rem;
   position: relative;
 }
 
 .auth-drawer[hidden] {
   display: none;
+}
+
+.drawer-stage-row {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  width: 100%;
+}
+
+@media (max-width: 460px) {
+  .drawer-stage-row {
+    flex-direction: column;
+  }
+}
+
+.drawer-hero-spotlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.drawer-hero-frame {
+  width: 174px;
+  height: 174px;
+  border-radius: 1.35rem;
+  overflow: hidden;
+  border: 3px solid var(--drawer-color, #FACC15);
+  background: #090b16;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 22px var(--drawer-glow, rgba(250, 204, 21, 0.35));
+  position: relative;
+  animation: heroPopIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes heroPopIn {
+  from {
+    scale: 0.72;
+    opacity: 0.4;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+.drawer-hero-img,
+.drawer-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.drawer-hero-video {
+  position: absolute;
+  inset: 0;
+}
+
+.drawer-hero-class {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--drawer-color, #fde047);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.14rem 0.55rem;
+  white-space: nowrap;
+}
+
+.drawer-auth-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .auth-drawer.jammed {
@@ -1506,10 +1628,15 @@ if (template) {
         <div class="profiles-strip" role="listbox" aria-label="Carlesso Family Profiles"></div>
 
         <div class="auth-drawer" hidden>
-          <div class="drawer-header"></div>
-          <div class="drawer-body"></div>
-          <div class="feedback-msg" role="status" aria-live="polite"></div>
-          <button type="button" class="forgot-link" hidden></button>
+          <div class="drawer-stage-row">
+            <div class="drawer-hero-spotlight"></div>
+            <div class="drawer-auth-col">
+              <div class="drawer-header"></div>
+              <div class="drawer-body"></div>
+              <div class="feedback-msg" role="status" aria-live="polite"></div>
+              <button type="button" class="forgot-link" hidden></button>
+            </div>
+          </div>
         </div>
       </div>
     </dialog>
@@ -1566,6 +1693,7 @@ export class PuffinLoginElement extends BaseElement {
     this.$grid = this.shadowRoot.querySelector('.profiles-strip');
     this.$pills = this.shadowRoot.querySelector('.policy-pills');
     this.$drawer = this.shadowRoot.querySelector('.auth-drawer');
+    this.$drawerSpotlight = this.shadowRoot.querySelector('.drawer-hero-spotlight');
     this.$drawerHeader = this.shadowRoot.querySelector('.drawer-header');
     this.$drawerBody = this.shadowRoot.querySelector('.drawer-body');
     this.$feedback = this.shadowRoot.querySelector('.feedback-msg');
@@ -1862,7 +1990,7 @@ export class PuffinLoginElement extends BaseElement {
     this.$badgeImg.hidden = false;
     this.$badgeLock.hidden = true;
     if (user.role === 'bot') {
-      this.$badgeName.innerHTML = `<tt class="robot-tt">&lt;${user.shortName}/&gt;</tt>`;
+      this.$badgeName.innerHTML = `<tt class="robot-tt">${user.shortName}</tt>`;
     } else {
       this.$badgeName.textContent = user.shortName;
     }
@@ -1948,11 +2076,18 @@ export class PuffinLoginElement extends BaseElement {
       const videoSrc = p.video
         ? `${this.config.assetBaseUrl}/${p.video}`.replace(/\/\//g, '/')
         : '';
-      const nameHtml =
-        p.role === 'bot' ? `<tt class="robot-tt">&lt;${p.shortName}/&gt;</tt>` : p.shortName;
+      const isBot = p.role === 'bot';
+      const nameHtml = isBot ? `<tt class="robot-tt">${p.shortName}</tt>` : p.shortName;
+      const botTooltipHtml = isBot
+        ? `<span class="bot-only-tooltip">🤖 This is for bots not for you!</span>`
+        : '';
+      if (isBot) {
+        card.title = 'This is for bots not for you!';
+      }
 
       card.innerHTML = `
         ${lock.jammed ? '<span class="jam-badge" title="Jammed!">!</span>' : ''}
+        ${botTooltipHtml}
         <div class="card-avatar-frame">
           <img class="card-avatar-img" src="${imgSrc}" alt="${p.shortName}" loading="lazy" />
           ${
@@ -1964,7 +2099,19 @@ export class PuffinLoginElement extends BaseElement {
         <div class="card-name">${nameHtml}</div>
       `;
 
-      if (policy.allowed) {
+      if (isBot) {
+        card.addEventListener('mouseenter', () => this._startCardVideo(card));
+        card.addEventListener('focus', () => this._startCardVideo(card));
+        card.addEventListener('mouseleave', () => this._stopCardVideo(card, false));
+        card.addEventListener('blur', () => this._stopCardVideo(card, false));
+        card.addEventListener('click', (e) => {
+          e.preventDefault();
+          playTone(220, 80, 'square');
+          setTimeout(() => playTone(165, 110, 'square'), 90);
+          card.classList.add('bot-tooltip-flash');
+          setTimeout(() => card.classList.remove('bot-tooltip-flash'), 1800);
+        });
+      } else if (policy.allowed) {
         card.addEventListener('click', () => this.selectCandidate(p));
         card.addEventListener('mouseenter', () => this._startCardVideo(card));
         card.addEventListener('focus', () => this._startCardVideo(card));
@@ -1973,12 +2120,12 @@ export class PuffinLoginElement extends BaseElement {
       }
       this.$grid.appendChild(card);
 
-      if (isSelected && policy.allowed) {
+      if (isSelected && policy.allowed && !isBot) {
         setTimeout(() => this._startCardVideo(card), 50);
       }
 
       // Row 1: Riccardo, Kate, Ale, Seby (4 cols)
-      // Row 2: Nonna Lucilla (col 1), [empty spacer] (col 2), Guest (col 3), Saga UAT Bot (col 4)
+      // Row 2: Nonna Lucilla (col 1), [empty spacer] (col 2), Guest (col 3), bot (col 4)
       if (p.id === 'lucilla') {
         const spacer = document.createElement('div');
         spacer.className = 'profile-grid-spacer';
@@ -1991,7 +2138,7 @@ export class PuffinLoginElement extends BaseElement {
   openModal(preselectUserId = null) {
     if (preselectUserId) {
       const found = PUFFIN_PROFILES.find((p) => p.id === normalizeProfileId(preselectUserId));
-      if (found && this.evaluatePolicy(found).allowed) {
+      if (found && found.role !== 'bot' && this.evaluatePolicy(found).allowed) {
         this.selectCandidate(found);
       }
     } else {
@@ -2005,7 +2152,8 @@ export class PuffinLoginElement extends BaseElement {
     }
   }
 
-  selectCandidate(profile) {
+  selectCandidate(profile, instantGuest = false) {
+    if (!profile || profile.role === 'bot') return;
     if (this._jamTimer) {
       clearInterval(this._jamTimer);
       this._jamTimer = null;
@@ -2018,7 +2166,7 @@ export class PuffinLoginElement extends BaseElement {
     this.$feedback.className = 'feedback-msg';
     this.renderModalContent();
 
-    if (profile.authType === 'none') {
+    if (profile.authType === 'none' && instantGuest) {
       playTone(660, 90, 'triangle');
       this.saveActiveSession(profile.id, true);
       this.$dialog.close();
@@ -2029,6 +2177,53 @@ export class PuffinLoginElement extends BaseElement {
     this.$drawer.hidden = false;
     this.$drawer.classList.toggle('jammed', lock.jammed);
     this.$drawer.style.setProperty('--drawer-color', profile.colorHex);
+    this.$drawer.style.setProperty('--drawer-glow', profile.glowHex);
+
+    // Populate the 3x3 (174x174px) Hero Spotlight Stage on the left of .auth-drawer!
+    const imgSrc = `${this.config.assetBaseUrl}/${profile.avatar}`.replace(/\/\//g, '/');
+    const videoSrc = profile.video
+      ? `${this.config.assetBaseUrl}/${profile.video}`.replace(/\/\//g, '/')
+      : '';
+    this.$drawerSpotlight.innerHTML = `
+      <div class="drawer-hero-frame" data-hero-id="${profile.id}">
+        <img class="drawer-hero-img" src="${imgSrc}" alt="${profile.shortName}" />
+        ${
+          videoSrc
+            ? `<video class="drawer-hero-video" src="${videoSrc}" autoplay muted loop playsinline></video>`
+            : ''
+        }
+      </div>
+      <span class="drawer-hero-class">${profile.emoji || ''} ${profile.rpgClass || ''}</span>
+    `;
+    const $spotVid = this.$drawerSpotlight.querySelector('.drawer-hero-video');
+    if ($spotVid) {
+      $spotVid.addEventListener('error', () => $spotVid.remove(), { once: true });
+      const playPromise = $spotVid.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
+    }
+
+    if (profile.authType === 'none') {
+      this.$drawerHeader.innerHTML = `
+        <span><strong>${profile.shortName}</strong></span>
+        <span class="attempts-pill">1-Click</span>
+      `;
+      this.$forgotBtn.hidden = true;
+      this.$drawerBody.innerHTML = `
+        <button type="button" class="action-btn" id="confirm-guest-btn" style="width:100%;padding:0.65rem 1rem;font-size:0.95rem;">
+          🐧 ${tr.playAsGuestBtn}
+        </button>
+      `;
+      const $gBtn = this.$drawerBody.querySelector('#confirm-guest-btn');
+      setTimeout(() => $gBtn?.focus(), 30);
+      $gBtn?.addEventListener('click', () => {
+        playTone(660, 90, 'triangle');
+        this.saveActiveSession(profile.id, true);
+        this.$dialog.close();
+      });
+      return;
+    }
 
     const attemptsLeft = Math.max(0, MAX_FAILED_ATTEMPTS - lock.attempts);
     const pillClass = lock.jammed || lock.attempts >= 2 ? 'attempts-pill danger' : 'attempts-pill';
@@ -2328,18 +2523,32 @@ const LEADERBOARD_CSS = `
 .hof-row {
   background: rgba(20, 24, 46, 0.9);
   border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.85rem;
+  border-radius: 0.95rem;
   padding: 0.45rem 0.85rem;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, padding 0.22s ease;
   cursor: default;
 }
 
 .hof-row:hover,
-.hof-row:focus-within {
+.hof-row:focus-within,
+.hof-row.is-expanded {
   border-color: var(--row-color, #FACC15);
-  background: rgba(30, 36, 68, 0.96);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  background: rgba(30, 36, 68, 0.97);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.48);
+  padding: 0.65rem 0.9rem;
+  align-items: stretch;
   outline: none;
+}
+
+.hof-content-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hof-main {
@@ -2352,13 +2561,13 @@ const LEADERBOARD_CSS = `
 .hof-left {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.55rem;
   min-width: 0;
 }
 
 .hof-rank {
-  width: 1.5rem;
-  font-size: 0.82rem;
+  min-width: 1.5rem;
+  font-size: 0.84rem;
   font-weight: 800;
   color: #94a3b8;
   font-variant-numeric: tabular-nums;
@@ -2371,13 +2580,28 @@ const LEADERBOARD_CSS = `
 .hof-row[data-rank="3"] .hof-rank { color: #fb923c; font-weight: 900; }
 
 .lb-avatar-wrap {
-  width: 2.35rem;
-  height: 2.35rem;
-  border-radius: 26%;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 24%;
   overflow: hidden;
   border: 2px solid var(--row-color, #FACC15);
   background: #0b0d19;
   flex-shrink: 0;
+  position: relative;
+  transition: width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              height 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-radius 0.28s ease,
+              box-shadow 0.28s ease;
+}
+
+.hof-row:hover .lb-avatar-wrap,
+.hof-row:focus-within .lb-avatar-wrap,
+.hof-row.is-expanded .lb-avatar-wrap {
+  width: 6.75rem;
+  height: 6.75rem;
+  border-radius: 1rem;
+  border-width: 2.5px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
 }
 
 .lb-avatar-img {
@@ -2393,20 +2617,49 @@ const LEADERBOARD_CSS = `
               object-position 0.3s ease;
 }
 
+.lb-avatar-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.hof-row.video-playing .lb-avatar-video {
+  opacity: 1;
+}
+
 .hof-row:hover .lb-avatar-img,
-.hof-row:focus-within .lb-avatar-img {
+.hof-row:focus-within .lb-avatar-img,
+.hof-row.is-expanded .lb-avatar-img {
   object-position: center 50%;
   translate: 0px 0%;
   scale: 1.0;
 }
 
 .hof-name {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: #f8fafc;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.hof-role-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--row-color, #fde047);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.06rem 0.45rem;
+  margin-right: 0.35rem;
+  white-space: nowrap;
 }
 
 .hof-row[data-player-id="guest"] .lb-avatar-wrap,
@@ -2428,32 +2681,39 @@ const LEADERBOARD_CSS = `
 }
 
 .hof-score {
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   color: var(--row-color, #fde047);
   flex-shrink: 0;
 }
 
-/* HOVER-ONLY DETAILS (completely hidden at rest!) */
+/* HOVER-ONLY DETAILS (flows in the right column beside the full-height left avatar!) */
 .hof-hover-details {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: #94a3b8;
-  line-height: 1.35;
-  transition: max-height 0.22s ease, opacity 0.2s ease, margin-top 0.2s ease;
+  line-height: 1.4;
+  transition: max-height 0.25s ease, opacity 0.22s ease, margin-top 0.22s ease;
   margin-top: 0;
 }
 
 .hof-row:hover .hof-hover-details,
-.hof-row:focus-within .hof-hover-details {
-  max-height: 3.5rem;
+.hof-row:focus-within .hof-hover-details,
+.hof-row.is-expanded .hof-hover-details {
+  max-height: 6.5rem;
   opacity: 1;
-  margin-top: 0.38rem;
-  padding-top: 0.35rem;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  margin-top: 0.42rem;
+  padding-top: 0.38rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.hof-summary-line {
+  color: #e2e8f0;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
 }
 
 .hof-hover-details code {
@@ -2697,40 +2957,109 @@ export class PuffinLeaderboardElement extends BaseElement {
 
       const nameHtml =
         profile.role === 'bot'
-          ? `<tt class="robot-tt">&lt;${profile.shortName}/&gt;</tt>`
+          ? `<tt class="robot-tt">${profile.shortName}</tt>`
           : profile.shortName;
+
+      const rolePillHtml = `<span class="hof-role-pill">${profile.emoji || ''} ${profile.rpgClass || ''}</span>`;
+      const summaryHtml = entry.summary_text
+        ? `<div class="hof-summary-line">${rolePillHtml}${entry.summary_text}</div>`
+        : `<div class="hof-summary-line">${rolePillHtml}</div>`;
 
       return `
         <div class="hof-row" role="listitem" tabindex="0" data-rank="${rank}" data-player-id="${profile.id || 'null'}" style="--row-color: ${profile.colorHex}">
-          <div class="hof-main">
-            <div class="hof-left">
-              <span class="hof-rank">${rank}</span>
-              <div class="lb-avatar-wrap">
-                <img class="lb-avatar-img" src="${profile.avatar}" alt="${profile.shortName}" loading="lazy" />
-              </div>
-              <span class="hof-name">${nameHtml}</span>
-            </div>
-            <div class="hof-right-group">
-              <span class="hof-score">${Number(entry.score).toLocaleString('en-US')}</span>
-              ${adminRowBtns}
-            </div>
+          <div class="lb-avatar-wrap">
+            <img class="lb-avatar-img" src="${profile.avatar}" alt="${profile.shortName}" loading="lazy" />
+            ${
+              profile.video
+                ? `<video class="lb-avatar-video" data-src="${profile.video}" muted loop playsinline preload="none"></video>`
+                : ''
+            }
           </div>
-          <div class="hof-hover-details">
-            <code>${entry.game_id}</code> • ⏱️ ${timeInfo.durationText} (${timeInfo.rangeText}) • 🌐 ${hostStr}${
+          <div class="hof-content-col">
+            <div class="hof-main">
+              <div class="hof-left">
+                <span class="hof-rank">#${rank}</span>
+                <span class="hof-name">${nameHtml}</span>
+              </div>
+              <div class="hof-right-group">
+                <span class="hof-score">${Number(entry.score).toLocaleString('en-US')}</span>
+                ${adminRowBtns}
+              </div>
+            </div>
+            <div class="hof-hover-details">
+              ${summaryHtml}
+              <div>
+                <code>${entry.game_id}</code> • ⏱️ ${timeInfo.durationText} (${timeInfo.rangeText}) • 🌐 ${hostStr}${
         extraPairs ? ` • <code>${extraPairs}</code>` : ''
       }
+              </div>
+            </div>
           </div>
         </div>
       `;
     });
 
     this.$list.innerHTML = adminHeaderHtml + rowsHtml.join('');
+
+    this.$list.querySelectorAll('.hof-row').forEach((row) => {
+      const startVid = () => {
+        const vid = row.querySelector('.lb-avatar-video');
+        if (!vid || vid.dataset.failed === '1') return;
+        if (!vid.src && vid.dataset.src) {
+          vid.src = vid.dataset.src;
+          vid.addEventListener(
+            'error',
+            () => {
+              vid.dataset.failed = '1';
+              row.classList.remove('video-playing');
+            },
+            { once: true }
+          );
+          vid.addEventListener('playing', () => {
+            row.classList.add('video-playing');
+          });
+        }
+        const p = vid.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      };
+      const stopVid = () => {
+        const vid = row.querySelector('.lb-avatar-video');
+        if (!vid) return;
+        row.classList.remove('video-playing');
+        try {
+          vid.pause();
+        } catch {}
+      };
+      row.addEventListener('mouseenter', startVid);
+      row.addEventListener('focusin', startVid);
+      row.addEventListener('mouseleave', stopVid);
+      row.addEventListener('focusout', stopVid);
+    });
   }
 }
 
 const _activeGameStarts = new Map();
 
 export const PuffinLogin = {
+  /**
+   * Dedicated programmatic login for Antigravity UAT Bot ('bot' / 'saga').
+   * Never selectable via human UI ("This is for bots not for you!").
+   */
+  async loginAsBot(plainSecret) {
+    const botProfile = PUFFIN_PROFILES.find((p) => p.id === 'saga');
+    if (!botProfile) return null;
+    const hash = await computePuffinSecretHash('saga', plainSecret);
+    if (hash !== botProfile.secretHash) {
+      throw new Error('Invalid UAT Bot secret');
+    }
+    const el = document.querySelector('puffin-login');
+    if (el) {
+      el.saveActiveSession('saga', true);
+      if (el.$dialog?.open) el.$dialog.close();
+      return el.getCurrentUser();
+    }
+    return botProfile;
+  },
   init(options = {}) {
     if (typeof window !== 'undefined') {
       window.PUFFINLOGIN_ENV = { ...(window.PUFFINLOGIN_ENV || {}), ...options };

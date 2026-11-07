@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0] - 2026-11-07
+
+### Changed
+- **Giant `3× × 3×` (`174×174px`) Hero Login Spotlight**: Clicking a profile in `<puffin-login>` displays a `174×174px` animated Veo 3.1 + full RPG figurine stage on the left of the login drawer.
+- **Hall of Fame Full-Height Left Avatar on Hover (`108×108px`)**: Hovering any Hall of Fame row expands the avatar to full height on the left while all header and telemetry text flows in the right column.
+- **`<tt>bot</tt>` Tooltip (`"🤖 This is for bots not for you!"`)**: Renamed UAT profile label to `<tt>bot</tt>` and disabled human selection in the UI with a hover tooltip.
+
 ## [1.4.0] - 2026-11-07
 
 ### Added
