@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] - 2026-11-07
+
+### Added
+- **Difficulty Selector (`🐣 Facile` [Default], `🙂 Medio`, `🔥 Difficile`)**: Default set to `🐣 Facile` (`285ms` tick); lightened `🙂 Medio` to `220ms` (42% gentler for kids than the old `155ms`).
+- **`1 - 2 - 3 - VIA!` Start Countdown & Safe Left Spawn**: Added visual + audio `1 -> 2 -> 3 -> VIA! 🚀` countdown with pre-steering arrow and 15-cell runway so kids never die immediately when starting a game.
+- **Keyboard Restart (`Enter` & `Space`)**: Added `Enter`, `NumpadEnter`, and `Space` keyboard restart on Game Over.
+
 ## [1.0.1] - 2026-11-05
 
 ### Changed

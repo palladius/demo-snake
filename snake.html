@@ -42,8 +42,9 @@
     .hud-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
       min-width: 0;
+      flex-wrap: wrap;
     }
 
     .game-title {
@@ -85,10 +86,43 @@
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 1.15rem;
-      padding: 0.9rem;
+      padding: 0.85rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    /* DIFFICULTY SELECTOR BAR (Default = Facile / Easy) */
+    .diff-bar {
+      display: inline-flex;
+      background: #0b0e1d;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 0.22rem;
+      gap: 0.25rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .diff-btn {
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      padding: 0.34rem 0.78rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+    }
+
+    .diff-btn:hover {
+      color: #fff;
+    }
+
+    .diff-btn.active {
+      background: var(--snake-color, #FACC15);
+      color: #090b14;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
     }
 
     .canvas-wrap {
@@ -188,6 +222,7 @@
       body { padding: 0.45rem; }
       .hud-header { padding: 0.45rem 0.65rem; }
       .game-title { font-size: 0.92rem; }
+      .diff-btn { padding: 0.3rem 0.62rem; font-size: 0.74rem; }
     }
   </style>
 </head>
@@ -204,14 +239,20 @@
 
   <main class="arena-layout">
     <section class="stage-card">
+      <div class="diff-bar" id="diff-bar" role="group" aria-label="Difficoltà gioco">
+        <button type="button" class="diff-btn active" data-diff="easy">🐣 Facile</button>
+        <button type="button" class="diff-btn" data-diff="medium">🙂 Medio</button>
+        <button type="button" class="diff-btn" data-diff="hard">🔥 Difficile</button>
+      </div>
+
       <div class="canvas-wrap" id="canvas-wrap">
         <canvas id="snake-canvas" width="600" height="390"></canvas>
       </div>
 
       <div class="controls-row">
-        <button type="button" class="btn primary" id="btn-start">Play / Restart</button>
-        <button type="button" class="btn" id="btn-eat-apple">+300 pt</button>
-        <button type="button" class="btn" id="btn-die-now">Game Over</button>
+        <button type="button" class="btn primary" id="btn-start">▶️ Play / Restart (Enter / Spazio)</button>
+        <button type="button" class="btn" id="btn-eat-apple">🍎 +300 pt</button>
+        <button type="button" class="btn" id="btn-die-now">💀 Game Over</button>
       </div>
 
       <div class="dpad" id="dpad-controls" aria-label="Snake directional controls">
@@ -238,6 +279,18 @@
     const ROWS = 13;
     const CELL = 30;
 
+    /**
+     * Kid-friendly difficulty presets (Default = 'easy' / Facile).
+     * - easy:   285ms tick (gentle & relaxed for kids!)
+     * - medium: 220ms tick (42% lighter than old 155ms)
+     * - hard:   145ms tick (fast arcade challenge)
+     */
+    const DIFFICULTY_LEVELS = {
+      easy: { id: 'easy', label: '🐣 Facile', tickMs: 285, pointsPerApple: 100 },
+      medium: { id: 'medium', label: '🙂 Medio', tickMs: 220, pointsPerApple: 150 },
+      hard: { id: 'hard', label: '🔥 Difficile', tickMs: 145, pointsPerApple: 200 },
+    };
+
     const canvas = document.getElementById('snake-canvas');
     const ctx = canvas.getContext('2d');
     const widget = document.getElementById('puffin-widget');
@@ -246,12 +299,13 @@
     const btnStart = document.getElementById('btn-start');
     const btnEat = document.getElementById('btn-eat-apple');
     const btnDie = document.getElementById('btn-die-now');
+    const diffBtns = Array.from(document.querySelectorAll('.diff-btn'));
 
+    let currentDifficulty = 'easy';
     let snake = [
-      { x: 7, y: 6 },
-      { x: 6, y: 6 },
-      { x: 5, y: 6 },
       { x: 4, y: 6 },
+      { x: 3, y: 6 },
+      { x: 2, y: 6 },
     ];
     let dir = { x: 1, y: 0 };
     // FIFO input buffer queue: caches rapid multi-key turns (e.g. UP then LEFT within 1 tick!)
@@ -262,6 +316,53 @@
     let matchStartedAt = new Date().toISOString();
     let isGameOver = false;
     let tickTimer = null;
+    // 1 - 2 - 3 start countdown so kids have time to put their fingers on the arrows!
+    let countdownStep = 0; // 0 = not counting down; 1, 2, 3 = counting; 4 = "VIA!"
+    let countdownTimer = null;
+
+    function playCountdownBeep(freq = 520, durationMs = 95) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const actx = new AudioCtx();
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, actx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + durationMs / 1000);
+        osc.connect(gain);
+        gain.connect(actx.destination);
+        osc.start();
+        osc.stop(actx.currentTime + durationMs / 1000);
+        setTimeout(() => actx.close().catch(() => {}), durationMs + 50);
+      } catch {}
+    }
+
+    function stopAllTimers() {
+      if (tickTimer) {
+        clearInterval(tickTimer);
+        tickTimer = null;
+      }
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      countdownStep = 0;
+    }
+
+    function setDifficulty(diffId, restartIfLogged = true) {
+      if (!DIFFICULTY_LEVELS[diffId]) return;
+      currentDifficulty = diffId;
+      diffBtns.forEach((b) => {
+        b.classList.toggle('active', b.getAttribute('data-diff') === diffId);
+      });
+      if (restartIfLogged && PuffinLogin.getCurrentUser()) {
+        startNewMatch();
+      } else {
+        drawBoard();
+      }
+    }
 
     function syncPlayerTheme() {
       const user = PuffinLogin.getCurrentUser();
@@ -277,7 +378,7 @@
     function spawnApple() {
       for (let tries = 0; tries < 50; tries++) {
         const candidate = {
-          x: 1 + Math.floor(Math.random() * (COLS - 2)),
+          x: 2 + Math.floor(Math.random() * (COLS - 4)),
           y: 1 + Math.floor(Math.random() * (ROWS - 2)),
         };
         if (!snake.some((s) => s.x === candidate.x && s.y === candidate.y)) {
@@ -285,14 +386,17 @@
           return;
         }
       }
-      apple = { x: 10, y: 5 };
+      apple = { x: 13, y: 6 };
     }
 
-    function startNewMatch() {
-      if (tickTimer) {
-        clearInterval(tickTimer);
-        tickTimer = null;
-      }
+    function launchGameLoop() {
+      const cfg = DIFFICULTY_LEVELS[currentDifficulty] || DIFFICULTY_LEVELS.easy;
+      matchStartedAt = PuffinLogin.startGameSession('puffin-snake');
+      tickTimer = setInterval(stepSnake, cfg.tickMs);
+    }
+
+    function startNewMatch({ skipCountdown = false } = {}) {
+      stopAllTimers();
       const user = PuffinLogin.getCurrentUser();
       if (!user) {
         hofSection.hidden = true;
@@ -300,11 +404,11 @@
         widget.openModal();
         return;
       }
+      // Spawn well on the left (x: 4) so the player has 15 full cells of runway ahead!
       snake = [
-        { x: 7, y: 6 },
-        { x: 6, y: 6 },
-        { x: 5, y: 6 },
         { x: 4, y: 6 },
+        { x: 3, y: 6 },
+        { x: 2, y: 6 },
       ];
       dir = { x: 1, y: 0 };
       dirQueue = [];
@@ -314,11 +418,36 @@
       // Hide Hall of Fame while playing!
       hofSection.hidden = true;
       document.getElementById('dpad-controls').style.display = 'grid';
-      matchStartedAt = PuffinLogin.startGameSession('puffin-snake');
       spawnApple();
       updateHud();
+
+      if (skipCountdown) {
+        drawBoard();
+        launchGameLoop();
+        return;
+      }
+
+      // 1 - 2 - 3 - VIA! Countdown so kids never die immediately on start!
+      countdownStep = 1;
+      playCountdownBeep(440, 90);
       drawBoard();
-      tickTimer = setInterval(stepSnake, 155);
+
+      countdownTimer = setInterval(() => {
+        countdownStep += 1;
+        if (countdownStep <= 3) {
+          playCountdownBeep(countdownStep === 2 ? 554 : 659, 90);
+          drawBoard();
+        } else if (countdownStep === 4) {
+          playCountdownBeep(880, 140);
+          drawBoard();
+        } else {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          countdownStep = 0;
+          drawBoard();
+          launchGameLoop();
+        }
+      }, 650);
     }
 
     function updateHud() {
@@ -326,7 +455,7 @@
     }
 
     function stepSnake() {
-      if (isGameOver || !PuffinLogin.getCurrentUser()) return;
+      if (isGameOver || countdownStep > 0 || !PuffinLogin.getCurrentUser()) return;
       if (dirQueue.length > 0) {
         dir = dirQueue.shift();
       }
@@ -342,9 +471,10 @@
         return;
       }
 
+      const cfg = DIFFICULTY_LEVELS[currentDifficulty] || DIFFICULTY_LEVELS.easy;
       snake.unshift(head);
       if (head.x === apple.x && head.y === apple.y) {
-        score += 100;
+        score += cfg.pointsPerApple;
         applesEaten += 1;
         spawnApple();
       } else {
@@ -359,10 +489,7 @@
       if (isGameOver || !PuffinLogin.getCurrentUser()) return;
       isGameOver = true;
       dirQueue = [];
-      if (tickTimer) {
-        clearInterval(tickTimer);
-        tickTimer = null;
-      }
+      stopAllTimers();
 
       const endedAt = new Date().toISOString();
       const user = PuffinLogin.getCurrentUser();
@@ -375,7 +502,7 @@
         extra: {
           apples_eaten: applesEaten,
           snake_length: snake.length,
-          difficulty: 'normal',
+          difficulty: currentDifficulty,
           schema_hash: 'snake_grid_20x13',
           death_cause: cause,
         },
@@ -390,6 +517,7 @@
     function drawBoard() {
       const user = PuffinLogin.getCurrentUser();
       const color = user ? user.colorHex : '#64748B';
+      const cfg = DIFFICULTY_LEVELS[currentDifficulty] || DIFFICULTY_LEVELS.easy;
 
       ctx.fillStyle = '#070913';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -435,15 +563,46 @@
         ctx.fill();
       });
 
+      // Draw countdown overlay (1 -> 2 -> 3 -> VIA!) so the player sees the snake & direction before moving
+      if (countdownStep > 0 && !isGameOver) {
+        const previewDir = dirQueue.length > 0 ? dirQueue[0] : dir;
+        const arrowX = (snake[0].x + previewDir.x) * CELL + CELL / 2;
+        const arrowY = (snake[0].y + previewDir.y) * CELL + CELL / 2;
+        const arrowGlyph =
+          previewDir.x === 1 ? '➡️' : previewDir.x === -1 ? '⬅️' : previewDir.y === -1 ? '⬆️' : '⬇️';
+        ctx.font = '20px sans-serif';
+        ctx.fillText(arrowGlyph, arrowX, arrowY);
+
+        ctx.fillStyle = 'rgba(8, 10, 20, 0.52)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const badgeText = countdownStep <= 3 ? String(countdownStep) : 'VIA! 🚀';
+        ctx.fillStyle = color;
+        ctx.font = '900 58px Inter, system-ui, sans-serif';
+        ctx.fillText(badgeText, canvas.width / 2, canvas.height / 2 - 10);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '800 15px Inter, system-ui, sans-serif';
+        ctx.fillText(
+          `${user.shortName} (${cfg.label}) • Preparati sulle frecce!`,
+          canvas.width / 2,
+          canvas.height / 2 + 36
+        );
+      }
+
       if (isGameOver) {
-        ctx.fillStyle = 'rgba(8, 10, 20, 0.68)';
+        ctx.fillStyle = 'rgba(8, 10, 20, 0.72)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#fef08a';
         ctx.font = '900 28px Inter, system-ui, sans-serif';
-        ctx.fillText(`GAME OVER — ${score}`, canvas.width / 2, canvas.height / 2 - 10);
+        ctx.fillText(`GAME OVER — ${score} pt`, canvas.width / 2, canvas.height / 2 - 12);
         ctx.fillStyle = '#cbd5e1';
         ctx.font = '700 14px Inter, system-ui, sans-serif';
-        ctx.fillText(`${user.shortName} • Press Space or Play to restart`, canvas.width / 2, canvas.height / 2 + 20);
+        ctx.fillText(
+          `${user.shortName} (${cfg.label}) • Premi INVIO (Enter) o SPAZIO per rigiocare`,
+          canvas.width / 2,
+          canvas.height / 2 + 20
+        );
       }
     }
 
@@ -462,6 +621,16 @@
       const nextVec = vecMap[dirName];
       if (!nextVec) return;
 
+      // During the 1-2-3 countdown, allow pre-steering the initial direction (except reversing into own neck)
+      if (countdownStep > 0) {
+        if (nextVec.x !== -1) {
+          dir = nextVec;
+          dirQueue = [];
+          drawBoard();
+        }
+        return;
+      }
+
       const refDir = dirQueue.length > 0 ? dirQueue[dirQueue.length - 1] : dir;
       if (nextVec.x !== refDir.x && nextVec.y !== refDir.y && dirQueue.length < 3) {
         dirQueue.push(nextVec);
@@ -470,19 +639,49 @@
 
     window.addEventListener('keydown', (e) => {
       if (!PuffinLogin.getCurrentUser()) return;
+      // Do not intercept keys while the PuffinLogin modal dialog is open
+      const modalOpen = Boolean(widget.shadowRoot?.querySelector('dialog[open]'));
+      if (modalOpen) return;
+
+      const isRestartKey =
+        e.code === 'Space' ||
+        e.code === 'Enter' ||
+        e.code === 'NumpadEnter' ||
+        e.key === ' ' ||
+        e.key === 'Enter';
+
+      if (isRestartKey && isGameOver) {
+        e.preventDefault();
+        startNewMatch();
+        return;
+      }
+
       if (['ArrowUp', 'KeyW'].includes(e.code)) { e.preventDefault(); setDirection('UP'); }
       if (['ArrowDown', 'KeyS'].includes(e.code)) { e.preventDefault(); setDirection('DOWN'); }
       if (['ArrowLeft', 'KeyA'].includes(e.code)) { e.preventDefault(); setDirection('LEFT'); }
       if (['ArrowRight', 'KeyD'].includes(e.code)) { e.preventDefault(); setDirection('RIGHT'); }
-      if (e.code === 'Space' && isGameOver) { e.preventDefault(); startNewMatch(); }
+    });
+
+    diffBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.currentTarget.blur();
+        setDifficulty(btn.getAttribute('data-diff'), true);
+      });
     });
 
     document.querySelectorAll('.dpad-btn').forEach((btn) => {
-      btn.addEventListener('click', () => setDirection(btn.getAttribute('data-dir')));
+      btn.addEventListener('click', (e) => {
+        e.currentTarget.blur();
+        setDirection(btn.getAttribute('data-dir'));
+      });
     });
 
-    btnStart.addEventListener('click', startNewMatch);
-    btnEat.addEventListener('click', () => {
+    btnStart.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      startNewMatch();
+    });
+    btnEat.addEventListener('click', (e) => {
+      e.currentTarget.blur();
       if (isGameOver || !PuffinLogin.getCurrentUser()) return;
       score += 300;
       applesEaten += 3;
@@ -491,7 +690,8 @@
       updateHud();
       drawBoard();
     });
-    btnDie.addEventListener('click', () => {
+    btnDie.addEventListener('click', (e) => {
+      e.currentTarget.blur();
       triggerGameOver('wall_crash');
     });
 
@@ -500,16 +700,16 @@
       if (newUser) {
         startNewMatch();
       } else {
-        if (tickTimer) {
-          clearInterval(tickTimer);
-          tickTimer = null;
-        }
+        stopAllTimers();
         hofSection.hidden = true;
         drawBoard();
       }
     });
 
     const params = new URLSearchParams(window.location.search);
+    if (params.get('diff') && DIFFICULTY_LEVELS[params.get('diff')]) {
+      setDifficulty(params.get('diff'), false);
+    }
     if (params.get('lang')) {
       widget.setLang(params.get('lang'));
     }
@@ -520,9 +720,14 @@
       widget.saveActiveSession(params.get('user'), false);
     }
 
+    const skipCountdownParam =
+      params.get('nocountdown') === '1' ||
+      params.get('gameover') === '1' ||
+      Boolean(params.get('eat'));
+
     syncPlayerTheme();
     if (PuffinLogin.getCurrentUser()) {
-      startNewMatch();
+      startNewMatch({ skipCountdown: skipCountdownParam });
     }
 
     if (params.get('eat') && PuffinLogin.getCurrentUser()) {
@@ -530,7 +735,7 @@
       score = count * 100;
       applesEaten = count;
       for (let i = 0; i < Math.min(count, 8); i++) {
-        snake.push({ x: Math.max(1, 4 - i), y: 6 });
+        snake.push({ x: Math.max(1, 2 - i), y: 6 });
       }
       matchStartedAt = new Date(Date.now() - 42_000).toISOString();
       updateHud();
@@ -538,18 +743,18 @@
     }
 
     if (params.get('gameover') === '1' && PuffinLogin.getCurrentUser()) {
-      if (tickTimer) clearInterval(tickTimer);
+      stopAllTimers();
       triggerGameOver('wall_crash');
     }
 
     if (params.get('wrong')) {
-      if (tickTimer) clearInterval(tickTimer);
+      stopAllTimers();
       widget.openModal(params.get('wrong'));
       if (widget.selectedCandidate) {
         widget.verifySecret(widget.selectedCandidate, 'wrong_secret_9999');
       }
     } else if (params.get('open')) {
-      if (tickTimer) clearInterval(tickTimer);
+      stopAllTimers();
       widget.openModal(params.get('open'));
       const demoPin = params.get('pin') || '';
       if (demoPin && widget.selectedCandidate) {
