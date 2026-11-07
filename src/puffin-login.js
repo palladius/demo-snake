@@ -223,6 +223,7 @@ export const STORAGE_KEYS = Object.freeze({
   AUTH: 'puffin_auth_v2',
   LANG: 'puffin_lang_v1',
   SCORES: 'puffin_scores_v2',
+  DELETED_SCORES: 'puffin_deleted_scores_v1',
   STATES: 'puffin_states_v1',
   OUTBOX: 'puffin_outbox_v1',
   LOCKOUT: 'puffin_lockout_v1',
@@ -676,8 +677,26 @@ export function formatTimeRange(startedAt, endedAt) {
   }
 }
 
+export function getDeletedScoreIds() {
+  try {
+    const raw = typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEYS.DELETED_SCORES);
+    const arr = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
 export function ensureDummyScoresSeeded(forceReset = false) {
-  const normalizedSeeds = DEFAULT_DUMMY_SCORES.map((s) => validateAndNormalizeScorePayload(s));
+  if (forceReset) {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.DELETED_SCORES);
+    } catch {}
+  }
+  const deletedSet = getDeletedScoreIds();
+  const normalizedSeeds = DEFAULT_DUMMY_SCORES
+    .map((s) => validateAndNormalizeScorePayload(s))
+    .filter((s) => !deletedSet.has(s.id));
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.SCORES);
     const existing = raw ? JSON.parse(raw) : [];
@@ -688,7 +707,9 @@ export function ensureDummyScoresSeeded(forceReset = false) {
       }
       return normalizedSeeds;
     }
-    return existing.map((item) => validateAndNormalizeScorePayload(item));
+    return existing
+      .map((item) => validateAndNormalizeScorePayload(item))
+      .filter((item) => !deletedSet.has(item.id));
   } catch {
     return normalizedSeeds;
   }
@@ -1674,6 +1695,9 @@ export class PuffinLoginElement extends BaseElement {
     this.renderBadge();
     this.renderModalContent();
     this.$drawer.hidden = true;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('puffin-auth-updated', { detail: { user: null } }));
+    }
     if (emitEvent) {
       this.dispatchEvent(
         new CustomEvent('puffin-user-changed', {
@@ -1714,6 +1738,9 @@ export class PuffinLoginElement extends BaseElement {
     this.highlightGuest = false;
     this.renderBadge();
     this.renderModalContent();
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('puffin-auth-updated', { detail: { user: next } }));
+    }
     if (emitEvent) {
       this.dispatchEvent(
         new CustomEvent('puffin-user-changed', {
@@ -2265,6 +2292,90 @@ const LEADERBOARD_CSS = `
   color: #cbd5e1;
   font-size: 0.68rem;
 }
+
+/* RICCARDO ADMIN BAR & PER-ROW CONTROLS (Only visible when logged in as riccardo!) */
+.hof-admin-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1.5px solid rgba(250, 204, 21, 0.45);
+  border-radius: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.hof-admin-badge {
+  font-size: 0.76rem;
+  font-weight: 900;
+  color: #fde047;
+}
+
+.hof-pantheon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #1e293b;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 0.55rem;
+  padding: 0.26rem 0.6rem;
+  font-size: 0.73rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.hof-pantheon-btn:hover {
+  background: #0f172a;
+  transform: translateY(-1px);
+}
+
+.hof-right-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  flex-shrink: 0;
+}
+
+.hof-row-pantheon-btn {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(56, 189, 248, 0.14);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 0.48rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.hof-row-pantheon-btn:hover {
+  background: rgba(56, 189, 248, 0.26);
+}
+
+.hof-row-del-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: #dc2626;
+  color: #fff;
+  border: 1px solid #f87171;
+  border-radius: 0.48rem;
+  padding: 0.2rem 0.48rem;
+  font-size: 0.68rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.hof-row-del-btn:hover {
+  background: #b91c1c;
+  transform: scale(1.05);
+}
 `;
 
 let sharedLbSheet = null;
@@ -2301,6 +2412,16 @@ export class PuffinLeaderboardElement extends BaseElement {
     this.activeFilter = this.getAttribute('filter-game') || 'ALL';
     this.$list = this.shadowRoot.querySelector('.hof-list');
     this._onScore = () => this.render();
+    this.$list.addEventListener('click', (e) => {
+      const delBtn = e.target.closest('[data-del-id]');
+      if (!delBtn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const scoreId = delBtn.getAttribute('data-del-id');
+      if (scoreId) {
+        PuffinLogin.deleteScore(scoreId);
+      }
+    });
   }
 
   connectedCallback() {
@@ -2310,6 +2431,8 @@ export class PuffinLeaderboardElement extends BaseElement {
     ensureDummyScoresSeeded(false);
     window.addEventListener('puffin-score-recorded', this._onScore);
     window.addEventListener('puffin-lang-changed', this._onScore);
+    window.addEventListener('puffin-auth-updated', this._onScore);
+    window.addEventListener('puffin-user-changed', this._onScore);
     this.render();
     this.syncFromCloud();
   }
@@ -2321,13 +2444,14 @@ export class PuffinLeaderboardElement extends BaseElement {
       if (!res.ok) return;
       const data = await res.json();
       if (!Array.isArray(data?.scores) || data.scores.length === 0) return;
+      const deletedSet = getDeletedScoreIds();
       const localList = ensureDummyScoresSeeded(false);
       const byId = new Map(localList.map((s) => [s.id, s]));
       let added = false;
       for (const remote of data.scores) {
         try {
           const norm = validateAndNormalizeScorePayload(remote);
-          if (!byId.has(norm.id)) {
+          if (!deletedSet.has(norm.id) && !byId.has(norm.id)) {
             byId.set(norm.id, norm);
             added = true;
           }
@@ -2350,13 +2474,31 @@ export class PuffinLeaderboardElement extends BaseElement {
   disconnectedCallback() {
     window.removeEventListener('puffin-score-recorded', this._onScore);
     window.removeEventListener('puffin-lang-changed', this._onScore);
+    window.removeEventListener('puffin-auth-updated', this._onScore);
+    window.removeEventListener('puffin-user-changed', this._onScore);
   }
 
   render() {
+    const activeUser = PuffinLogin.getCurrentUser();
+    const isAdmin = activeUser?.id === 'riccardo';
+    const pantheonCollectionUrl =
+      'https://console.cloud.google.com/firestore/databases/puffin-login/data/panel/scores?project=ror-goldie';
+
     const scores = PuffinLogin.getLeaderboard({
       appId: this.activeFilter === 'ALL' ? undefined : this.activeFilter,
       limit: TOP_TEN_LIMIT,
     });
+
+    const adminHeaderHtml = isAdmin
+      ? `
+        <div class="hof-admin-bar">
+          <span class="hof-admin-badge">👑 Admin: Riccardo</span>
+          <a class="hof-pantheon-btn" href="${pantheonCollectionUrl}" target="_blank" rel="noopener">
+            🔥 Pantheon Firestore (scores) ↗
+          </a>
+        </div>
+      `
+      : '';
 
     const rowsHtml = scores.map((entry, idx) => {
       const rank = idx + 1;
@@ -2370,6 +2512,20 @@ export class PuffinLeaderboardElement extends BaseElement {
         .slice(0, 4)
         .map(([k, v]) => `${k}:${v}`)
         .join(', ');
+      const docLeafUrl = `https://console.cloud.google.com/firestore/databases/puffin-login/data/panel/scores/${encodeURIComponent(
+        entry.id
+      )}?project=ror-goldie`;
+
+      const adminRowBtns = isAdmin
+        ? `
+          <a class="hof-row-pantheon-btn" href="${docLeafUrl}" target="_blank" rel="noopener" title="Vedi foglia ${entry.id} su Pantheon Firestore">
+            🔥 Foglia ↗
+          </a>
+          <button type="button" class="hof-row-del-btn" data-del-id="${entry.id}" title="Cancella record farlocco (${entry.id})">
+            🗑️ Cancella
+          </button>
+        `
+        : '';
 
       return `
         <div class="hof-row" role="listitem" tabindex="0" data-rank="${rank}" style="--row-color: ${profile.colorHex}">
@@ -2381,7 +2537,10 @@ export class PuffinLeaderboardElement extends BaseElement {
               </div>
               <span class="hof-name">${profile.shortName}</span>
             </div>
-            <span class="hof-score">${Number(entry.score).toLocaleString('en-US')}</span>
+            <div class="hof-right-group">
+              <span class="hof-score">${Number(entry.score).toLocaleString('en-US')}</span>
+              ${adminRowBtns}
+            </div>
           </div>
           <div class="hof-hover-details">
             <code>${entry.game_id}</code> • ⏱️ ${timeInfo.durationText} (${timeInfo.rangeText}) • 🌐 ${hostStr}${
@@ -2392,7 +2551,7 @@ export class PuffinLeaderboardElement extends BaseElement {
       `;
     });
 
-    this.$list.innerHTML = rowsHtml.join('');
+    this.$list.innerHTML = adminHeaderHtml + rowsHtml.join('');
   }
 }
 
@@ -2554,6 +2713,7 @@ export const PuffinLogin = {
 
   async getTopScores({ appId, game_id, gameId, mode, limit = TOP_TEN_LIMIT } = {}) {
     const targetGame = game_id || gameId || appId;
+    const deletedSet = getDeletedScoreIds();
     const localTop = this.getLeaderboard({ game_id: targetGame, mode, limit });
     try {
       const cfg = resolvePuffinConfig({ appId: targetGame });
@@ -2564,12 +2724,44 @@ export const PuffinLogin = {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data?.scores) && data.scores.length > 0) {
-          const merged = [...data.scores, ...localTop].sort((a, b) => b.score - a.score);
-          return merged.slice(0, limit);
+          const byId = new Map();
+          for (const item of [...data.scores, ...localTop]) {
+            if (item && item.id && !deletedSet.has(item.id) && !byId.has(item.id)) {
+              byId.set(item.id, item);
+            }
+          }
+          return Array.from(byId.values())
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
         }
       }
     } catch {}
     return localTop;
+  },
+
+  async deleteScore(scoreId) {
+    const cleanId = String(scoreId || '').trim();
+    if (!cleanId) return false;
+    try {
+      const deletedSet = getDeletedScoreIds();
+      deletedSet.add(cleanId);
+      localStorage.setItem(STORAGE_KEYS.DELETED_SCORES, JSON.stringify(Array.from(deletedSet)));
+
+      const list = ensureDummyScoresSeeded(false).filter((s) => s.id !== cleanId);
+      localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(list));
+    } catch {}
+
+    try {
+      const cfg = resolvePuffinConfig();
+      await fetch(`${cfg.apiUrl}/scores/${encodeURIComponent(cleanId)}`, {
+        method: 'DELETE',
+      });
+    } catch {}
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('puffin-score-recorded', { detail: { deletedId: cleanId } }));
+    }
+    return true;
   },
 };
 

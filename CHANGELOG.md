@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.0] - 2026-11-07
+
+### Added
+- **Riccardo Admin Controls in Hall of Fame (`👑 Admin: Riccardo`)**: When logged in as `riccardo`, the Hall of Fame displays direct links to **Pantheon Cloud Console Firestore** (`🔥 Pantheon Firestore (scores) ↗` + per-document `🔥 Foglia ↗`) and a red **`🗑️ Cancella`** button on every row to delete bogus scores from Firestore (`DELETE /v1/scores/:id`).
+
 ## [1.1.1] - 2026-11-07
 
 ### Changed
