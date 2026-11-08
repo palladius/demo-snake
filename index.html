@@ -137,12 +137,199 @@
       border: 2.5px solid var(--snake-color, #FACC15);
       box-shadow: 0 0 28px rgba(0, 0, 0, 0.6);
       background: #070913;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
     }
 
     canvas {
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none;
+    }
+
+    /* N/S/W/E PERIMETER & CENTRAL 90° ZONE GUIDES OVERLAY */
+    .canvas-zone-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .zone-pill {
+      position: absolute;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: rgba(248, 250, 252, 0.34);
+      background: rgba(11, 14, 29, 0.42);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      padding: 0.14rem 0.48rem;
+      border-radius: 999px;
+      transition: transform 0.14s ease, color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+    }
+    .zone-pill.zone-n { top: 6px; left: 50%; transform: translateX(-50%); }
+    .zone-pill.zone-s { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .zone-pill.zone-w { left: 6px; top: 50%; transform: translateY(-50%); }
+    .zone-pill.zone-e { right: 6px; top: 50%; transform: translateY(-50%); }
+    .zone-pill.zone-cw {
+      position: relative;
+      font-size: 0.72rem;
+      color: rgba(248, 250, 252, 0.22);
+      border-style: dotted;
+      padding: 0.22rem 0.6rem;
+    }
+
+    .zone-pill.flash {
+      color: #090b14;
+      background: var(--snake-color, #FACC15);
+      border-color: #fff;
+      box-shadow: 0 0 16px var(--snake-color, #FACC15);
+    }
+
+    /* ERGONOMIC MOBILE & MOUSE TOUCH COCKPIT (Thumbstick + 90° Clockwise Pad + D-Pad) */
+    .touch-cockpit {
+      margin-top: 0.7rem;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+      gap: 0.85rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 1rem;
+      background: rgba(11, 14, 29, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .joystick-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.28rem;
+    }
+
+    .joystick-ring {
+      position: relative;
+      width: 114px;
+      height: 114px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30, 36, 68, 0.95) 0%, rgba(11, 14, 29, 0.98) 75%);
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+
+    .joystick-ring:active {
+      cursor: grabbing;
+      border-color: var(--snake-color, #FACC15);
+    }
+
+    .joy-dir {
+      position: absolute;
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: rgba(248, 250, 252, 0.45);
+      pointer-events: none;
+    }
+    .joy-dir.joy-n { top: 5px; left: 50%; transform: translateX(-50%); }
+    .joy-dir.joy-s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+    .joy-dir.joy-w { left: 7px; top: 50%; transform: translateY(-50%); }
+    .joy-dir.joy-e { right: 7px; top: 50%; transform: translateY(-50%); }
+
+    .joystick-knob {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #fff 0%, var(--snake-color, #FACC15) 45%, #ca8a04 100%);
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 12px var(--snake-color, #FACC15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #090b14;
+      pointer-events: none;
+      transform: translate(0px, 0px);
+      transition: transform 0.18s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+
+    .joystick-knob.dragging {
+      transition: none;
+    }
+
+    .joystick-caption {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .cw-turn-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.18rem;
+      min-width: 108px;
+      min-height: 84px;
+      padding: 0.55rem 0.85rem;
+      border-radius: 1rem;
+      background: linear-gradient(145deg, #252c52, #171c36);
+      border: 2px solid rgba(250, 204, 21, 0.45);
+      color: #fef08a;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+      transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cw-turn-btn:hover {
+      border-color: var(--snake-color, #FACC15);
+      background: #2b3360;
+    }
+
+    .cw-turn-btn:active {
+      transform: scale(0.95);
+      background: var(--snake-color, #FACC15);
+      color: #090b14;
+    }
+
+    .cw-turn-icon {
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    .cw-turn-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.01em;
+    }
+
+    .touch-hint-bar {
+      margin-top: 0.45rem;
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    .touch-hint-bar strong {
+      color: #fef08a;
     }
 
     .controls-row {
@@ -362,8 +549,15 @@
         <button type="button" class="diff-btn" data-diff="hard">🔥 Difficile</button>
       </div>
 
-      <div class="canvas-wrap" id="canvas-wrap">
+      <div class="canvas-wrap" id="canvas-wrap" title="Trascina nelle 4 direzioni, clicca i bordi N/S/W/E, oppure clicca al centro per ruotare di 90° in senso orario!">
         <canvas id="snake-canvas" width="600" height="390"></canvas>
+        <div class="canvas-zone-overlay" aria-hidden="true">
+          <span class="zone-pill zone-n" id="zone-pill-UP">⬆️ N</span>
+          <span class="zone-pill zone-s" id="zone-pill-DOWN">⬇️ S</span>
+          <span class="zone-pill zone-w" id="zone-pill-LEFT">⬅️ W</span>
+          <span class="zone-pill zone-e" id="zone-pill-RIGHT">➡️ E</span>
+          <span class="zone-pill zone-cw" id="zone-pill-CW">↻ Tap = +90°</span>
+        </div>
       </div>
 
       <div class="controls-row">
@@ -371,13 +565,36 @@
         <button type="button" class="btn" id="btn-open-hof">🏆 Hall of Fame</button>
       </div>
 
-      <div class="dpad" id="dpad-controls" aria-label="Snake directional controls">
-        <span></span>
-        <button type="button" class="dpad-btn" data-dir="UP" aria-label="Up">⬆️</button>
-        <span></span>
-        <button type="button" class="dpad-btn" data-dir="LEFT" aria-label="Left">⬅️</button>
-        <button type="button" class="dpad-btn" data-dir="DOWN" aria-label="Down">⬇️</button>
-        <button type="button" class="dpad-btn" data-dir="RIGHT" aria-label="Right">➡️</button>
+      <!-- 4-Mode Mobile & Mouse Cockpit: Spring-Back Thumbstick + 90° Clockwise Pad + D-Pad -->
+      <div class="touch-cockpit" id="touch-cockpit" aria-label="Controlli touch e mouse">
+        <div class="joystick-wrap">
+          <div class="joystick-ring" id="snake-joystick" role="slider" aria-label="Joystick direzionale a ritorno elastico">
+            <span class="joy-dir joy-n">N ⬆️</span>
+            <span class="joy-dir joy-s">⬇️ S</span>
+            <span class="joy-dir joy-w">⬅️ W</span>
+            <span class="joy-dir joy-e">E ➡️</span>
+            <div class="joystick-knob" id="snake-joystick-knob">🕹️</div>
+          </div>
+          <span class="joystick-caption">Pallino elastico (Drag / Tap)</span>
+        </div>
+
+        <button type="button" class="cw-turn-btn" id="btn-turn-cw" title="Ruota di 90° in senso orario (anche cliccando al centro o in una zona vuota)">
+          <span class="cw-turn-icon">↻</span>
+          <span class="cw-turn-label">Ruota 90° Orario</span>
+        </button>
+
+        <div class="dpad" id="dpad-controls" aria-label="Snake directional controls">
+          <span></span>
+          <button type="button" class="dpad-btn" data-dir="UP" aria-label="Up">⬆️</button>
+          <span></span>
+          <button type="button" class="dpad-btn" data-dir="LEFT" aria-label="Left">⬅️</button>
+          <button type="button" class="dpad-btn" data-dir="DOWN" aria-label="Down">⬇️</button>
+          <button type="button" class="dpad-btn" data-dir="RIGHT" aria-label="Right">➡️</button>
+        </div>
+      </div>
+
+      <div class="touch-hint-bar" id="touch-hint-bar">
+        🖐️ <strong>1. Drag</strong> 4 direzioni • 🎯 <strong>2. Tap Bordi</strong> N/S/W/E • 🕹️ <strong>3. Pallino</strong> elastico • ↻ <strong>4. Tap Centro/Sfondo</strong> = Ruota 90° orario (<code id="last-input-badge">Pronto</code>)
       </div>
 
       <!-- Minimalist Bottom Record Tip ("Record: [Icon] Riccardo, 1800") -->
@@ -410,6 +627,13 @@
 
   <script type="module">
     import { PuffinLogin, PUFFIN_PROFILES } from './src/puffin-login.js';
+    import {
+      directionVecToName,
+      resolveCanvasZoneTap,
+      resolveDragDirection,
+      resolveJoystickVector,
+      rotateDirectionClockwise,
+    } from './src/snake-controls.js';
 
     const COLS = 20;
     const ROWS = 13;
@@ -815,7 +1039,210 @@
       if (nextVec.x !== refDir.x && nextVec.y !== refDir.y && dirQueue.length < 3) {
         dirQueue.push(nextVec);
       }
+      flashZoneIndicator(dirName);
     }
+
+    const lastInputBadge = document.getElementById('last-input-badge');
+    let _flashTimer = null;
+
+    function flashZoneIndicator(tag, modeLabel = '') {
+      if (lastInputBadge && modeLabel) {
+        lastInputBadge.textContent = modeLabel;
+      }
+      document.querySelectorAll('.zone-pill.flash').forEach((el) => el.classList.remove('flash'));
+      const pill = document.getElementById(`zone-pill-${tag}`);
+      if (pill) {
+        pill.classList.add('flash');
+        if (_flashTimer) clearTimeout(_flashTimer);
+        _flashTimer = setTimeout(() => pill.classList.remove('flash'), 220);
+      }
+    }
+
+    /**
+     * Mode #4: Rotates the snake's current (or last queued) direction by 90° clockwise:
+     * UP -> RIGHT -> DOWN -> LEFT -> UP.
+     */
+    function rotateClockwise90(sourceLabel = '↻ 90°') {
+      if (!PuffinLogin.getCurrentUser()) return;
+      if (isGameOver && !hofDialog.open) {
+        startNewMatch();
+        return;
+      }
+      const refDir = dirQueue.length > 0 ? dirQueue[dirQueue.length - 1] : dir;
+      const rotated = rotateDirectionClockwise(refDir);
+      const dirName = directionVecToName(rotated);
+      setDirection(dirName);
+      flashZoneIndicator('CW', `${sourceLabel} → ${dirName}`);
+    }
+
+    // =========================================================================
+    // MODE #1 (Continuous 4-Way Drag) + MODE #2 (NSWE Zone Tap) + MODE #4 (Center 90° Tap)
+    // =========================================================================
+    const canvasWrap = document.getElementById('canvas-wrap');
+    let boardPtr = { active: false, id: null, startX: 0, startY: 0, anchorX: 0, anchorY: 0, dragged: false };
+
+    canvasWrap.addEventListener('pointerdown', (e) => {
+      if (!PuffinLogin.getCurrentUser() || hofDialog.open) return;
+      if (e.button !== undefined && e.button !== 0) return;
+      e.preventDefault();
+      try {
+        canvasWrap.setPointerCapture(e.pointerId);
+      } catch {}
+      boardPtr = {
+        active: true,
+        id: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        anchorX: e.clientX,
+        anchorY: e.clientY,
+        dragged: false,
+      };
+    });
+
+    canvasWrap.addEventListener('pointermove', (e) => {
+      if (!boardPtr.active || e.pointerId !== boardPtr.id) return;
+      const dx = e.clientX - boardPtr.anchorX;
+      const dy = e.clientY - boardPtr.anchorY;
+      const dragRes = resolveDragDirection(dx, dy, 20);
+      if (dragRes) {
+        boardPtr.dragged = true;
+        boardPtr.anchorX = e.clientX;
+        boardPtr.anchorY = e.clientY;
+        setDirection(dragRes.direction);
+        flashZoneIndicator(dragRes.direction, `Drag → ${dragRes.direction}`);
+      }
+    });
+
+    function finishBoardPointer(e) {
+      if (!boardPtr.active || (e.pointerId !== undefined && e.pointerId !== boardPtr.id)) return;
+      const wasDragged = boardPtr.dragged;
+      boardPtr.active = false;
+      try {
+        canvasWrap.releasePointerCapture(e.pointerId);
+      } catch {}
+
+      if (wasDragged) return;
+
+      if (isGameOver && !hofDialog.open) {
+        startNewMatch();
+        return;
+      }
+
+      const rect = canvasWrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const normX = (e.clientX - rect.left) / rect.width;
+      const normY = (e.clientY - rect.top) / rect.height;
+      const zone = resolveCanvasZoneTap(normX, normY, 0.28);
+      if (zone === 'CLOCKWISE_90') {
+        rotateClockwise90('Tap Centro ↻');
+      } else {
+        setDirection(zone);
+        flashZoneIndicator(zone, `Zona ${zone}`);
+      }
+    }
+
+    canvasWrap.addEventListener('pointerup', finishBoardPointer);
+    canvasWrap.addEventListener('pointercancel', () => {
+      boardPtr.active = false;
+    });
+
+    // =========================================================================
+    // MODE #3: Spring-Back Virtual Thumbstick ("Cerchietto con Pallino")
+    // =========================================================================
+    const joystickRing = document.getElementById('snake-joystick');
+    const joystickKnob = document.getElementById('snake-joystick-knob');
+    const btnTurnCw = document.getElementById('btn-turn-cw');
+    let joyPtr = { active: false, id: null, centerX: 0, centerY: 0, moved: false };
+
+    function updateJoystickFromEvent(e) {
+      const dx = e.clientX - joyPtr.centerX;
+      const dy = e.clientY - joyPtr.centerY;
+      const vec = resolveJoystickVector(dx, dy, 36, 9);
+      joystickKnob.style.transform = `translate(${vec.clampedX}px, ${vec.clampedY}px)`;
+      if (vec.direction) {
+        joyPtr.moved = true;
+        setDirection(vec.direction);
+        flashZoneIndicator(vec.direction, `Pallino → ${vec.direction}`);
+      }
+    }
+
+    function resetJoystickKnob() {
+      joyPtr.active = false;
+      joystickKnob.classList.remove('dragging');
+      joystickKnob.style.transform = 'translate(0px, 0px)';
+    }
+
+    joystickRing.addEventListener('pointerdown', (e) => {
+      if (!PuffinLogin.getCurrentUser() || hofDialog.open) return;
+      if (e.button !== undefined && e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = joystickRing.getBoundingClientRect();
+      joyPtr = {
+        active: true,
+        id: e.pointerId,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2,
+        moved: false,
+      };
+      joystickKnob.classList.add('dragging');
+      try {
+        joystickRing.setPointerCapture(e.pointerId);
+      } catch {}
+      updateJoystickFromEvent(e);
+    });
+
+    joystickRing.addEventListener('pointermove', (e) => {
+      if (!joyPtr.active || e.pointerId !== joyPtr.id) return;
+      updateJoystickFromEvent(e);
+    });
+
+    joystickRing.addEventListener('pointerup', (e) => {
+      if (!joyPtr.active || e.pointerId !== joyPtr.id) return;
+      const hadDirection = joyPtr.moved;
+      try {
+        joystickRing.releasePointerCapture(e.pointerId);
+      } catch {}
+      resetJoystickKnob();
+      if (!hadDirection) {
+        rotateClockwise90('Tap Pallino ↻');
+      }
+    });
+
+    joystickRing.addEventListener('pointercancel', resetJoystickKnob);
+
+    btnTurnCw.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.currentTarget.blur();
+      rotateClockwise90('Bottone ↻ 90°');
+    });
+
+    // =========================================================================
+    // MODE #4 (Fallback): Tap on any unrecognized / dead zone rotates 90° CW
+    // =========================================================================
+    let bgTapStart = null;
+    document.addEventListener('pointerdown', (e) => {
+      if (!PuffinLogin.getCurrentUser() || isGameOver || hofDialog.open) return;
+      const loginModalOpen = Boolean(widget.shadowRoot?.querySelector('dialog[open]'));
+      if (loginModalOpen) return;
+      const interactive = e.target.closest(
+        '#canvas-wrap, #snake-joystick, #btn-turn-cw, button, a, input, select, dialog, puffin-login, puffin-leaderboard'
+      );
+      if (interactive) {
+        bgTapStart = null;
+        return;
+      }
+      bgTapStart = { x: e.clientX, y: e.clientY, pointerId: e.pointerId };
+    });
+
+    document.addEventListener('pointerup', (e) => {
+      if (!bgTapStart || e.pointerId !== bgTapStart.pointerId) return;
+      const dist = Math.hypot(e.clientX - bgTapStart.x, e.clientY - bgTapStart.y);
+      bgTapStart = null;
+      if (dist < 18) {
+        rotateClockwise90('Zona morta ↻');
+      }
+    });
 
     window.addEventListener('keydown', (e) => {
       if (!PuffinLogin.getCurrentUser()) return;
